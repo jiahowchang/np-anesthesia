@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻醉科專科護理師學習平台 · Anesthesia NP Prep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+/* ===== Dark Tech Theme ===== */
+:root {
+  --bg: #07090d;
+  --bg-2: #0b0f15;
+  --surface: #0f141c;
+  --surface-2: #131923;
+  --surface-alt: #1a212e;
+  --border: #1f2733;
+  --border-strong: #2c3543;
+  --ink: #e7ecf3;
+  --ink-2: #a8b3c4;
+  --ink-3: #6c7787;
+  --accent: oklch(0.78 0.16 195);
+  --accent-soft: oklch(0.28 0.08 195);
+  --accent-deep: oklch(0.85 0.18 195);
+  --accent-glow: oklch(0.78 0.18 195 / 0.35);
+  --warm: oklch(0.78 0.15 75);
+  --warm-soft: oklch(0.28 0.07 75);
+  --rose: oklch(0.72 0.18 15);
+  --rose-soft: oklch(0.28 0.10 15);
+  --violet: oklch(0.72 0.16 290);
+  --violet-soft: oklch(0.28 0.10 290);
+  --blue: oklch(0.74 0.15 240);
+  --blue-soft: oklch(0.28 0.10 240);
+  --green: oklch(0.78 0.16 145);
+  --green-soft: oklch(0.28 0.08 145);
+  --pink: oklch(0.74 0.18 340);
+  --pink-soft: oklch(0.28 0.10 340);
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 6px 18px rgba(0,0,0,0.6), 0 24px 60px rgba(0,0,0,0.5);
+  --glow: 0 0 0 1px color-mix(in oklch, var(--accent) 30%, transparent), 0 0 24px var(--accent-glow);
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.005em;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.32 0.10 195 / 0.18), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, oklch(0.32 0.10 290 / 0.10), transparent);
+  background-attachment: fixed;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(60, 90, 110, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 90, 110, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  z-index: 0;
+}
+#root { position: relative; z-index: 1; }
+
+/* Layout */
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 64px 1fr;
+}
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 28px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  grid-row: 1 / span 2;
+}
+.topbar {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px 0 48px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(14px);
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; color: var(--ink-2); font-size: 14px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.topbar-author {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, oklch(0.22 0.06 195) 0%, oklch(0.20 0.05 240) 100%);
+  border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent);
+  box-shadow: 0 0 16px oklch(0.78 0.16 195 / 0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.topbar-author-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg-2); color: var(--accent);
+  display: grid; place-items: center;
+  border: 1px solid color-mix(in oklch, var(--accent) 40%, transparent);
+  flex-shrink: 0;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.topbar-author-text { line-height: 1.25; }
+.topbar-author-label { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.16em; text-transform: uppercase; font-family: var(--font-mono); }
+.topbar-author-name { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -0.005em; }
+.topbar-author-name .sep-dot { display: inline-block; width: 3px; height: 3px; border-radius: 99px; background: var(--ink-3); margin: 0 6px 2px; vertical-align: middle; }
+.topbar-author-affil { color: var(--ink-2); font-weight: 500; font-size: 13px; }
+.topbar-author-contact { display: flex; gap: 6px; margin-top: 4px; }
+.contact-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--accent); text-decoration: none;
+  padding: 2px 8px; background: oklch(0.18 0.04 195 / 0.6);
+  border: 1px solid color-mix(in oklch, var(--accent) 25%, transparent);
+  border-radius: 99px; letter-spacing: 0.02em; transition: all 0.15s;
+}
+.contact-chip:hover { background: oklch(0.22 0.06 195 / 0.8); border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+.topbar-time {
+  font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums;
+  display: flex; align-items: center; gap: 6px;
+  padding-right: 14px; border-right: 1px solid var(--border); font-family: var(--font-mono);
+}
+.main { grid-column: 2; grid-row: 2; padding: 36px 48px 80px; max-width: 1280px; width: 100%; }
+
+/* Brand */
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.brand-mark {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, oklch(0.45 0.15 195) 0%, oklch(0.35 0.18 220) 100%);
+  display: grid; place-items: center; color: var(--accent-deep);
+  position: relative;
+  box-shadow: 0 0 24px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.brand-mark::after { content: ""; position: absolute; inset: 0; border-radius: 10px; border: 1px solid color-mix(in oklch, var(--accent) 40%, transparent); }
+.brand-name { font-weight: 700; font-size: 16px; line-height: 1.25; }
+.brand-tag { font-size: 11px; color: var(--accent); margin-top: 3px; letter-spacing: 0.16em; font-family: var(--font-mono); }
+
+/* Nav */
+.nav-group { margin-bottom: 22px; }
+.nav-label { font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; padding: 0 10px 8px; font-family: var(--font-mono); }
+.nav-item {
+  display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 8px;
+  cursor: pointer; font-size: 15px; color: var(--ink-2); transition: all 0.15s; user-select: none;
+}
+.nav-item:hover { background: var(--surface-alt); color: var(--ink); }
+.nav-item.active {
+  background: linear-gradient(90deg, oklch(0.25 0.08 195) 0%, transparent 100%);
+  color: var(--accent); font-weight: 600; position: relative;
+}
+.nav-item.active::before {
+  content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 2px;
+  background: var(--accent); border-radius: 99px; box-shadow: 0 0 8px var(--accent-glow);
+}
+.nav-icon { width: 18px; height: 18px; display: grid; place-items: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-3);
+  background: var(--surface-alt); padding: 2px 9px; border-radius: 99px; font-family: var(--font-mono);
+}
+.nav-item.active .nav-badge { background: var(--bg-2); color: var(--accent); border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent); }
+
+/* Page Header */
+.page-head { margin-bottom: 28px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.page-title {
+  font-size: 32px; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 8px;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.page-sub { color: var(--ink-3); font-size: 14px; font-family: var(--font-mono); letter-spacing: 0.02em; }
+
+/* Filters */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.filter-group { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 99px; padding: 4px 4px 4px 14px; }
+.filter-label { font-size: 12px; color: var(--ink-3); font-weight: 500; letter-spacing: 0.02em; }
+.filter-chips { display: flex; gap: 2px; }
+.chip {
+  font-size: 13.5px; padding: 6px 13px; border-radius: 99px; cursor: pointer;
+  color: var(--ink-2); font-weight: 500; border: none; background: transparent; font-family: inherit; transition: all 0.15s;
+}
+.chip:hover { background: var(--surface-alt); color: var(--ink); }
+.chip.active { background: var(--accent); color: var(--bg); box-shadow: 0 0 12px var(--accent-glow); }
+
+/* Specialty colors */
+.spec-internal { --spec: var(--blue); --spec-soft: var(--blue-soft); }
+.spec-psych { --spec: var(--violet); --spec-soft: var(--violet-soft); }
+.spec-pediatric { --spec: var(--warm); --spec-soft: var(--warm-soft); }
+.spec-surgery { --spec: var(--rose); --spec-soft: var(--rose-soft); }
+.spec-obgyn { --spec: var(--pink); --spec-soft: var(--pink-soft); }
+.spec-anesth { --spec: var(--green); --spec-soft: var(--green-soft); }
+
+/* Cards */
+.card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px;
+  position: relative; overflow: hidden;
+}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+/* Deck cards */
+.deck-card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.deck-card:hover {
+  border-color: var(--spec, var(--accent));
+  box-shadow: 0 0 0 1px var(--spec, var(--accent)), 0 0 32px color-mix(in oklch, var(--spec, var(--accent)) 25%, transparent);
+  transform: translateY(-2px);
+}
+.deck-card::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--spec, var(--accent));
+  box-shadow: 0 0 12px color-mix(in oklch, var(--spec, var(--accent)) 50%, transparent);
+}
+.deck-spec-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+  color: var(--spec, var(--accent)); background: var(--spec-soft, var(--accent-soft));
+  padding: 3px 10px; border-radius: 99px; letter-spacing: 0.05em;
+  border: 1px solid color-mix(in oklch, var(--spec, var(--accent)) 30%, transparent);
+  text-transform: uppercase; font-family: var(--font-mono);
+}
+.deck-year { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; font-family: var(--font-mono); letter-spacing: 0.08em; }
+.deck-title { font-size: 17px; font-weight: 700; margin: 14px 0 4px; letter-spacing: -0.01em; }
+.deck-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.deck-count { font-size: 14px; color: var(--ink-2); }
+.deck-count strong { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.deck-progress { height: 4px; background: var(--surface-alt); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+.deck-progress-fill {
+  height: 100%; background: var(--spec, var(--accent)); border-radius: 99px; transition: width 0.4s ease;
+  box-shadow: 0 0 8px color-mix(in oklch, var(--spec, var(--accent)) 50%, transparent);
+}
+
+/* Flashcard */
+.flash-stage { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.flash-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.flash-back { display: inline-flex; align-items: center; gap: 6px; border: none; background: none; color: var(--ink-2); font-family: inherit; font-size: 14px; cursor: pointer; padding: 6px 0; }
+.flash-back:hover { color: var(--ink); }
+.flash-progress { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-3); font-weight: 500; }
+.flash-progress strong { color: var(--ink); font-size: 15px; font-weight: 700; }
+.flash-bar { height: 6px; background: var(--surface-alt); border-radius: 99px; overflow: hidden; }
+.flash-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), oklch(0.65 0.18 220));
+  border-radius: 99px; transition: width 0.4s cubic-bezier(.22,.61,.36,1); box-shadow: 0 0 12px var(--accent-glow);
+}
+.flash-card { perspective: 2000px; height: 520px; }
+.flash-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; }
+.flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
+.flash-face.back { transform: rotateY(180deg); }
+.flash-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px 40px;
+  display: flex; flex-direction: column; box-shadow: var(--shadow-md); overflow: hidden;
+}
+.flash-face::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--spec, var(--accent)) 50%, transparent), transparent);
+}
+.flash-face.back { background: linear-gradient(180deg, var(--surface) 0%, oklch(0.18 0.04 195 / 0.3) 100%); }
+.flash-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+.flash-tag {
+  font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.08em;
+  background: var(--surface-alt); color: var(--ink-2); text-transform: uppercase; font-family: var(--font-mono); border: 1px solid var(--border);
+}
+.flash-tag.spec { background: var(--spec-soft, var(--accent-soft)); color: var(--spec, var(--accent)); border-color: color-mix(in oklch, var(--spec, var(--accent)) 30%, transparent); }
+.flash-tag.year { font-variant-numeric: tabular-nums; }
+.flash-stem { font-size: 20px; line-height: 1.75; color: var(--ink); letter-spacing: 0.005em; }
+.flash-stem .stem-label { display: inline-block; font-size: 12px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.12em; margin-bottom: 10px; font-family: var(--font-mono); }
+.flash-options { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; }
+.flash-option { display: flex; gap: 14px; padding: 14px 16px; background: var(--surface-alt); border-radius: 10px; font-size: 16.5px; line-height: 1.55; align-items: flex-start; }
+.flash-option-key { font-weight: 700; color: var(--ink-3); width: 22px; flex-shrink: 0; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+.flash-hint { margin-top: auto; padding-top: 18px; font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 8px; letter-spacing: 0.02em; }
+.kbd { font-family: var(--font-mono); font-size: 11px; background: var(--surface-alt); border: 1px solid var(--border); border-bottom-width: 2px; padding: 1px 6px; border-radius: 4px; color: var(--accent); }
+.flash-answer-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.flash-answer-key {
+  font-size: 32px; font-weight: 800; color: var(--accent);
+  background: linear-gradient(135deg, oklch(0.32 0.10 195) 0%, oklch(0.28 0.10 220) 100%);
+  width: 60px; height: 60px; border-radius: 12px; display: grid; place-items: center;
+  letter-spacing: -0.02em; border: 1px solid color-mix(in oklch, var(--accent) 40%, transparent);
+  box-shadow: 0 0 20px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.05); font-family: var(--font-mono);
+}
+.flash-answer-text { font-size: 17px; color: var(--ink); font-weight: 500; }
+.flash-answer-label { font-size: 12px; color: var(--ink-3); letter-spacing: 0.12em; font-weight: 700; font-family: var(--font-mono); }
+.flash-explain { font-size: 15.5px; line-height: 1.8; color: var(--ink-2); overflow-y: auto; flex: 1; padding-right: 8px; }
+.flash-explain h4 { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin: 18px 0 8px; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); }
+.flash-explain h4:first-child { margin-top: 0; }
+.flash-explain p { margin: 0 0 8px; }
+.flash-explain ul { padding-left: 18px; margin: 4px 0 8px; }
+.flash-explain li { margin: 2px 0; }
+.flash-source { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-3); }
+.flash-source-label { font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-bottom: 6px; color: var(--accent); font-family: var(--font-mono); }
+
+/* Flash actions */
+.flash-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 4px; }
+.flash-btn {
+  border: 1px solid var(--border); background: var(--surface); padding: 14px; border-radius: 10px;
+  font-family: inherit; font-size: 14px; cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; transition: all 0.15s; color: var(--ink-2);
+}
+.flash-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); background: var(--surface-alt); }
+.flash-btn .lab { font-weight: 700; color: var(--ink); font-size: 15px; }
+.flash-btn .sub { font-size: 12px; color: var(--ink-3); letter-spacing: 0.02em; }
+.flash-btn.again:hover { border-color: var(--rose); box-shadow: 0 0 16px color-mix(in oklch, var(--rose) 25%, transparent); }
+.flash-btn.again:hover .lab { color: var(--rose); }
+.flash-btn.hard:hover { border-color: var(--warm); box-shadow: 0 0 16px color-mix(in oklch, var(--warm) 25%, transparent); }
+.flash-btn.hard:hover .lab { color: var(--warm); }
+.flash-btn.good:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+.flash-btn.good:hover .lab { color: var(--accent); }
+.flash-nav { display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+.icon-btn { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; cursor: pointer; color: var(--ink-2); }
+.icon-btn:hover { background: var(--surface-alt); color: var(--accent); border-color: var(--accent); }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.flip-btn {
+  flex: 1; height: 44px; border-radius: 10px;
+  border: 1px solid color-mix(in oklch, var(--accent) 50%, transparent);
+  background: linear-gradient(135deg, var(--accent) 0%, oklch(0.65 0.18 220) 100%);
+  color: var(--bg); font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.04em; box-shadow: 0 0 24px var(--accent-glow);
+}
+.flip-btn:hover { filter: brightness(1.1); box-shadow: 0 0 32px var(--accent-glow); }
+
+/* Dashboard */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.kpi {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px;
+  position: relative; overflow: hidden;
+}
+.kpi::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--accent) 40%, transparent), transparent); }
+.kpi-icon {
+  position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; background: var(--accent-soft); color: var(--accent);
+  border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent);
+}
+.kpi-icon.warm { background: var(--warm-soft); color: var(--warm); border-color: color-mix(in oklch, var(--warm) 30%, transparent); }
+.kpi-icon.blue { background: var(--blue-soft); color: var(--blue); border-color: color-mix(in oklch, var(--blue) 30%, transparent); }
+.kpi-icon.rose { background: var(--rose-soft); color: var(--rose); border-color: color-mix(in oklch, var(--rose) 30%, transparent); }
+.kpi-label { font-size: 12px; color: var(--ink-3); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; font-family: var(--font-mono); }
+.kpi-value {
+  font-size: 38px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; font-family: var(--font-mono);
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.kpi-unit { font-size: 16px; font-weight: 500; color: var(--ink-3); margin-left: 5px; -webkit-text-fill-color: var(--ink-3); }
+.kpi-delta { font-size: 13px; color: var(--ink-3); margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+.kpi-delta.up { color: var(--accent); }
+.kpi-delta.down { color: var(--rose); }
+
+.panel {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px;
+  position: relative; overflow: hidden;
+}
+.panel::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--accent) 30%, transparent), transparent); }
+.panel-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; }
+.panel-title { font-size: 17px; font-weight: 700; letter-spacing: -0.005em; }
+.panel-sub { font-size: 13px; color: var(--ink-3); margin-top: 4px; font-family: var(--font-mono); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--ink-2); }
+.legend-dot { width: 10px; height: 10px; border-radius: 99px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+.dash-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 14px; }
+.dash-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Table */
+table.spec-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.spec-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); }
+.spec-table td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table .spec-name { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.spec-table .pass-cell { display: flex; align-items: center; gap: 10px; }
+.mini-bar { flex: 1; height: 6px; background: var(--surface-alt); border-radius: 99px; overflow: hidden; }
+.mini-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), oklch(0.65 0.18 220)); border-radius: 99px; box-shadow: 0 0 8px var(--accent-glow); }
+
+/* Hero */
+.hero {
+  background: radial-gradient(ellipse 80% 100% at 0% 0%, oklch(0.30 0.10 195 / 0.5), transparent 60%),
+    radial-gradient(ellipse 60% 100% at 100% 100%, oklch(0.28 0.10 290 / 0.4), transparent 60%),
+    linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px 40px;
+  margin-bottom: 28px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: linear-gradient(color-mix(in oklch, var(--accent) 12%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--accent) 12%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px; mask-image: linear-gradient(180deg, black 0%, transparent 80%); opacity: 0.3; pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
+.hero-deco-icons { position: absolute; top: 24px; right: 32px; display: flex; gap: 12px; color: var(--accent); z-index: 1; }
+.hero-deco-icons > * { background: oklch(0.18 0.04 195 / 0.6); border-radius: 10px; padding: 10px; border: 1px solid color-mix(in oklch, var(--accent) 25%, transparent); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase;
+  margin-bottom: 14px; display: inline-flex; align-items: center;
+  background: oklch(0.22 0.06 195 / 0.7); padding: 6px 14px; border-radius: 99px;
+  border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent); font-family: var(--font-mono);
+  box-shadow: 0 0 16px color-mix(in oklch, var(--accent) 15%, transparent);
+}
+.hero-title {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 760px; line-height: 1.25;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-desc { color: var(--ink-2); font-size: 15px; line-height: 1.75; max-width: 660px; }
+.hero-cta-row { display: flex; gap: 10px; margin-top: 22px; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, oklch(0.65 0.18 220) 100%);
+  color: var(--bg); border: none; padding: 13px 24px; border-radius: 10px; font-family: inherit;
+  font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center;
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent) 50%, transparent), 0 0 24px var(--accent-glow); letter-spacing: 0.02em;
+}
+.btn-primary:hover { filter: brightness(1.1); box-shadow: 0 0 0 1px var(--accent), 0 0 32px var(--accent-glow); }
+.btn-ghost {
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong);
+  padding: 13px 24px; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; display: inline-flex; align-items: center;
+}
+.btn-ghost:hover { background: var(--surface-alt); border-color: var(--accent); color: var(--accent); }
+
+.spec-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+.spec-summary {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative;
+  overflow: hidden; transition: all 0.2s;
+}
+.spec-summary:hover {
+  border-color: var(--spec, var(--accent)); transform: translateY(-2px);
+  box-shadow: 0 0 24px color-mix(in oklch, var(--spec, var(--accent)) 25%, transparent);
+}
+.spec-summary::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 100% 0%, color-mix(in oklch, var(--spec, var(--accent)) 15%, transparent), transparent 50%); pointer-events: none; }
+.spec-icon-tile {
+  width: 44px; height: 44px; border-radius: 11px;
+  background: var(--spec-soft, var(--accent-soft)); color: var(--spec, var(--accent));
+  display: grid; place-items: center;
+  border: 1px solid color-mix(in oklch, var(--spec, var(--accent)) 30%, transparent);
+  flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.spec-icon-tile.sm { width: 28px; height: 28px; border-radius: 7px; }
+.spec-summary-name { font-weight: 700; font-size: 15.5px; margin-bottom: 3px; }
+.spec-summary-count { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+
+/* Search */
+.search-input {
+  width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 13px 16px 13px 42px; font-family: inherit; font-size: 15px; color: var(--ink); margin-bottom: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236c7787' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 14px center;
+}
+.search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 20%, transparent); }
+.search-input::placeholder { color: var(--ink-3); }
+
+/* Charts */
+.chart-wrap { width: 100%; }
+.chart-grid line { stroke: var(--border); stroke-dasharray: 3 3; }
+.chart-axis text { font-size: 11px; fill: var(--ink-3); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Auth Screen */
+.auth-stage { position: relative; min-height: 100vh; display: grid; place-items: center; padding: 40px 24px; overflow: hidden; }
+.auth-bg-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(60, 90, 110, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(60, 90, 110, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 70%);
+}
+.auth-bg-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 60% at 20% 30%, oklch(0.40 0.15 195 / 0.25), transparent 60%), radial-gradient(ellipse 50% 60% at 80% 80%, oklch(0.38 0.16 290 / 0.20), transparent 60%);
+  pointer-events: none;
+}
+.auth-shell {
+  position: relative; display: grid; grid-template-columns: 1.05fr 1.15fr; width: 100%; max-width: 1180px;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px color-mix(in oklch, var(--accent) 8%, transparent);
+}
+.auth-shell::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); z-index: 2; }
+.auth-brand-side {
+  padding: 48px 44px; display: flex; flex-direction: column; gap: 32px;
+  background: radial-gradient(ellipse 60% 80% at 0% 0%, oklch(0.28 0.10 195 / 0.4), transparent 70%), linear-gradient(135deg, var(--surface) 0%, oklch(0.10 0.04 240) 100%);
+  position: relative; border-right: 1px solid var(--border);
+}
+.auth-brand-side::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: linear-gradient(color-mix(in oklch, var(--accent) 8%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--accent) 8%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px; mask-image: linear-gradient(180deg, transparent 0%, black 100%); opacity: 0.4; pointer-events: none;
+}
+.auth-brand-side > * { position: relative; z-index: 1; }
+.auth-brand { display: flex; align-items: center; gap: 16px; }
+.auth-tagline { font-size: 30px; font-weight: 700; line-height: 1.35; letter-spacing: -0.01em; }
+.auth-features { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.auth-features li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: color-mix(in srgb, var(--surface-alt) 60%, transparent); border: 1px solid var(--border); }
+.auth-feat-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent); flex-shrink: 0; }
+.auth-feat-title { font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+.auth-feat-sub { font-size: 12.5px; color: var(--ink-3); font-family: var(--font-mono); }
+.auth-author { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--accent); font-family: var(--font-mono); letter-spacing: 0.02em; flex-wrap: wrap; }
+.auth-form-side { padding: 44px 48px; display: flex; flex-direction: column; }
+.auth-tabs { display: flex; gap: 4px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 99px; padding: 4px; margin-bottom: 28px; align-self: flex-start; }
+.auth-tab { padding: 8px 18px; border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink-3); cursor: pointer; border-radius: 99px; transition: all 0.18s; letter-spacing: 0.02em; }
+.auth-tab:hover { color: var(--ink-2); }
+.auth-tab.active { background: linear-gradient(135deg, var(--accent) 0%, oklch(0.65 0.18 220) 100%); color: var(--bg); box-shadow: 0 0 16px var(--accent-glow); }
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-heading { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin: 0; background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-sub { margin: 0 0 8px; color: var(--ink-3); font-size: 14px; font-family: var(--font-mono); }
+.auth-field { display: flex; flex-direction: column; gap: 8px; }
+.auth-field-label { font-size: 12px; font-weight: 700; color: var(--ink-2); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px; }
+.auth-field-label .req { color: var(--rose); }
+.auth-field-label .hint { margin-left: auto; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--ink-3); font-weight: 500; }
+.auth-field input, .auth-field select {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px;
+  font-family: inherit; font-size: 15px; color: var(--ink); transition: all 0.15s;
+}
+.auth-field input::placeholder { color: var(--ink-3); }
+.auth-field input:focus, .auth-field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 20%, transparent); background: var(--surface); }
+.auth-field select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236c7787' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
+.auth-field select option { background: var(--surface); color: var(--ink); }
+.role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.role-pick { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--ink-3); font-family: inherit; font-size: 12.5px; font-weight: 600; transition: all 0.15s; }
+.role-pick:hover { color: var(--ink); border-color: var(--border-strong); }
+.role-pick.active { background: oklch(0.22 0.06 195 / 0.5); border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent) 30%, transparent), 0 0 16px var(--accent-glow); }
+.field-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
+.exam-group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.exam-group-pick { display: flex; align-items: center; gap: 8px; padding: 11px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--ink-3); font-family: inherit; font-size: 13px; font-weight: 600; transition: all 0.15s; text-align: left; }
+.exam-group-pick:hover { color: var(--ink); border-color: var(--border-strong); }
+.exam-group-pick.active { background: color-mix(in oklch, var(--spec, var(--accent)) 18%, var(--bg-2)); border-color: var(--spec, var(--accent)); color: var(--spec, var(--accent)); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--spec, var(--accent)) 30%, transparent), 0 0 14px color-mix(in oklch, var(--spec, var(--accent)) 30%, transparent); }
+.exam-group-pick svg { flex-shrink: 0; }
+.auth-error { background: oklch(0.25 0.10 15 / 0.4); border: 1px solid color-mix(in oklch, var(--rose) 40%, transparent); color: var(--rose); padding: 10px 14px; border-radius: 10px; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+.auth-submit { background: linear-gradient(135deg, var(--accent) 0%, oklch(0.65 0.18 220) 100%); color: var(--bg); border: none; padding: 14px 18px; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent) 50%, transparent), 0 0 28px var(--accent-glow); letter-spacing: 0.02em; margin-top: 8px; transition: all 0.18s; }
+.auth-submit:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 0 0 1px var(--accent), 0 0 36px var(--accent-glow); }
+.auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0; color: var(--ink-3); font-size: 12px; font-family: var(--font-mono); }
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.auth-demo { background: transparent; color: var(--ink-2); border: 1px solid var(--border-strong); padding: 12px 16px; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
+.auth-demo:hover { background: var(--surface-alt); color: var(--accent); border-color: var(--accent); }
+.auth-tos { font-size: 11.5px; color: var(--ink-3); line-height: 1.6; margin: 14px 0 0; text-align: center; }
+
+/* User menu */
+.user-menu { position: relative; }
+.user-chip { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.user-chip:hover { border-color: var(--accent); }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, oklch(0.55 0.18 290) 100%); color: var(--bg); display: grid; place-items: center; font-weight: 800; font-size: 13px; font-family: var(--font-mono); letter-spacing: -0.02em; }
+.user-chip-text { line-height: 1.25; text-align: left; }
+.user-chip-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.user-chip-role { font-size: 10.5px; color: var(--ink-3); font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.user-pop { position: absolute; top: calc(100% + 8px); right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 240px; box-shadow: var(--shadow-lg); z-index: 100; }
+.user-pop-head { padding: 12px 14px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+.user-pop-name { font-weight: 700; font-size: 14px; }
+.user-pop-mail { font-size: 12px; color: var(--ink-3); font-family: var(--font-mono); margin-top: 2px; }
+.user-pop-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; cursor: pointer; color: var(--ink-2); background: transparent; border: none; font-family: inherit; width: 100%; text-align: left; }
+.user-pop-item:hover { background: var(--surface-alt); color: var(--ink); }
+.user-pop-item.danger:hover { background: oklch(0.25 0.08 15 / 0.3); color: var(--rose); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Utilities */
+.fade-in { animation: fade 0.3s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.sep { width: 1px; height: 16px; background: var(--border); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .topbar { grid-column: 1; padding: 0 16px; }
+  .main { grid-column: 1; padding: 24px 16px 60px; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .spec-summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid, .dash-grid-2 { grid-template-columns: 1fr; }
+  .flash-card { height: 460px; }
+  .flash-face { padding: 24px; }
+  .topbar-author { display: none; }
+}
+@media (max-width: 880px) {
+  .auth-shell { grid-template-columns: 1fr; max-width: 480px; }
+  .auth-brand-side { display: none; }
+}
+@media (max-width: 600px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .spec-summary-grid { grid-template-columns: 1fr 1fr; }
+  .flash-actions { grid-template-columns: 1fr; }
+  .hero-title { font-size: 24px; }
+  .hero-deco-icons { display: none; }
+}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Data -->
+  <script>
+window.SPECIALTIES = [
+  { id: "anesth_general",  name: "麻醉通論",   short: "通", className: "spec-anesth" },
+  { id: "anesth_advanced", name: "進階麻醉",   short: "進", className: "spec-anesth" },
+];
+window.QUESTION_TYPES = [
+  { id: "general",  name: "麻醉科通論",   desc: "麻醉科專科護理師通論科目" },
+  { id: "advanced", name: "進階麻醉專科", desc: "麻醉科進階專科考試" },
+];
+window.YEARS = [114, 113, 112, 111, 110, 109];
+window.QUESTIONS = []; // loaded from questions.json at runtime
+window.PASS_STATS = {
+  yearly: [
+    { year: 109, applied: 168, passed: 102, rate: 60.7 },
+    { year: 110, applied: 186, passed: 118, rate: 63.4 },
+    { year: 111, applied: 198, passed: 132, rate: 66.7 },
+    { year: 112, applied: 214, passed: 146, rate: 68.2 },
+    { year: 113, applied: 232, passed: 162, rate: 69.8 },
+    { year: 114, applied: 248, passed: 178, rate: 71.8 },
+  ],
+  bySpecialty113: [
+    { id: "anesth_general",  applied: 232, passed: 184, rate: 79.3 },
+    { id: "anesth_advanced", applied: 232, passed: 162, rate: 69.8 },
+  ],
+  ageBucket: [
+    { label: "26–30歲", val: 68 },
+    { label: "31–35歲", val: 84 },
+    { label: "36–40歲", val: 52 },
+    { label: "41–45歲", val: 18 },
+    { label: "46歲以上", val: 6 },
+  ],
+};
+
+// Auth
+var USERS_KEY = "np_users";
+var SESSION_KEY = "np_session";
+function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY) || "{}"); } catch(e) { return {}; } }
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function hashPwd(s) { var h = 0; for (var i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0; return "h" + Math.abs(h).toString(36); }
+window.AuthAPI = {
+  current: function() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch(e) { return null; } },
+  register: function(o) {
+    var users = getUsers();
+    if (users[o.email]) throw new Error("此 Email 已註冊");
+    if (o.password.length < 6) throw new Error("密碼至少 6 個字元");
+    users[o.email] = { name: o.name, email: o.email, role: o.role, experience: o.experience||"", hospital: o.hospital||"", examGroup: o.examGroup||"", pwd: hashPwd(o.password), createdAt: new Date().toISOString() };
+    saveUsers(users);
+    var session = { name: o.name, email: o.email, role: o.role, experience: o.experience, hospital: o.hospital, examGroup: o.examGroup };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    return session;
+  },
+  login: function(o) {
+    var users = getUsers();
+    var u = users[o.email];
+    if (!u) throw new Error("此 Email 尚未註冊");
+    if (u.pwd !== hashPwd(o.password)) throw new Error("密碼錯誤");
+    var session = { name: u.name, email: u.email, role: u.role, experience: u.experience, hospital: u.hospital, examGroup: u.examGroup };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    return session;
+  },
+  logout: function() { localStorage.removeItem(SESSION_KEY); },
+};
+  </script>
+
+  <!-- React Components -->
+  <script type="text/babel">
+const { useState, useEffect, useCallback, useMemo } = React;
+
+// ===== Icon Components =====
+const iconProps = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+
+function SpecIcon({ id, size = 24 }) {
+  const p = { ...iconProps, width: size, height: size, viewBox: "0 0 24 24" };
+  switch (id) {
+    case "internal": return <svg {...p}><path d="M5 3v6a4 4 0 0 0 8 0V3"/><path d="M3 3h4M11 3h4"/><path d="M9 13v3a4 4 0 0 0 8 0v-1"/><circle cx="18" cy="14" r="2.2"/></svg>;
+    case "psych": return <svg {...p}><path d="M9.5 4.5a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0-2 4 2.5 2.5 0 0 0 0 4 2.5 2.5 0 0 0 2 4 2.5 2.5 0 0 0 5 0V4.5a2.5 2.5 0 0 0-2.5 0Z"/><path d="M14.5 4.5a2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1 2 4 2.5 2.5 0 0 1 0 4 2.5 2.5 0 0 1-2 4 2.5 2.5 0 0 1-5 0V4.5a2.5 2.5 0 0 1 2.5 0Z"/><path d="M12 8v8"/></svg>;
+    case "pediatric": return <svg {...p}><circle cx="12" cy="6" r="2.5"/><path d="M9 10h6l-1 4h-4z"/><path d="M9 14v6"/><path d="M15 14v6"/><path d="M9.5 17h5"/></svg>;
+    case "surgery": return <svg {...p}><path d="M14 4 4 14l4 4 10-10"/><path d="m14 4 6-1-1 6-5-5Z" fill="currentColor" fillOpacity=".1"/><path d="M8 18l-3 3"/><path d="m11 11 4 4"/></svg>;
+    case "obgyn": return <svg {...p}><circle cx="12" cy="9" r="5"/><path d="M12 14v8"/><path d="M9 19h6"/><circle cx="12" cy="9" r="1.5" fill="currentColor" fillOpacity=".15"/></svg>;
+    case "anesth": return <svg {...p}><path d="m18 6 3-3"/><path d="m15 3 6 6"/><path d="M16 8 8 16"/><path d="M18 10 14 6"/><path d="M9 15 3 21"/><path d="m6 18 3 3"/></svg>;
+    case "anesth_general": return <svg {...p}><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V5a4 4 0 0 1 8 0v3"/><path d="M12 12v5"/><path d="M10 14h4"/></svg>;
+    case "anesth_advanced": return <svg {...p}><path d="m18 6 3-3"/><path d="m15 3 6 6"/><path d="M16 8 8 16"/><path d="M18 10 14 6"/><path d="M9 15 3 21"/><path d="m6 18 3 3"/></svg>;
+    default: return null;
+  }
+}
+
+function MedicalCross({ size = 22 }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6V3z"/></svg>;
+}
+
+function EkgLine({ width = 320, height = 60, color = "currentColor" }) {
+  return <svg width={width} height={height} viewBox="0 0 320 60" fill="none"><path d="M0 30 L50 30 L65 30 L75 10 L85 50 L95 18 L105 30 L160 30 L175 30 L185 5 L195 55 L205 25 L215 30 L320 30" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+function MedIcon({ name, size = 18 }) {
+  const p = { ...iconProps, width: size, height: size, viewBox: "0 0 24 24" };
+  switch (name) {
+    case "pulse": return <svg {...p}><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>;
+    case "pill": return <svg {...p}><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-30 12 12)"/><path d="M9.5 7 14 14.5"/></svg>;
+    case "stethoscope": return <svg {...p}><path d="M5 3v6a4 4 0 0 0 8 0V3"/><path d="M3 3h4M11 3h4"/><path d="M9 13v3a4 4 0 0 0 8 0v-1"/><circle cx="18" cy="14" r="2.2"/></svg>;
+    case "cross": return <svg {...p} fill="currentColor" stroke="none"><path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7V3z"/></svg>;
+    case "shield": return <svg {...p}><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>;
+    case "book-open": return <svg {...p}><path d="M2 5a2 2 0 0 1 2-2h6v17H4a2 2 0 0 1-2-2V5Z"/><path d="M22 5a2 2 0 0 0-2-2h-6v17h6a2 2 0 0 0 2-2V5Z"/></svg>;
+    case "clipboard": return <svg {...p}><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z" fill="currentColor" fillOpacity=".1"/><path d="M9 11h6M9 15h4"/></svg>;
+    case "award": return <svg {...p}><circle cx="12" cy="9" r="6"/><path d="m8.5 14-2 7 5.5-3 5.5 3-2-7"/></svg>;
+    case "trend-up": return <svg {...p}><path d="M3 17 9 11l4 4 8-8"/><path d="M14 7h7v7"/></svg>;
+    case "users": return <svg {...p}><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><circle cx="17" cy="8" r="3"/><path d="M22 18a5 5 0 0 0-4-4.9"/></svg>;
+    case "target": return <svg {...p}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>;
+    case "calendar": return <svg {...p}><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>;
+    case "lightbulb": return <svg {...p}><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12c1 1 2 2 2 4h4c0-2 1-3 2-4a7 7 0 0 0-4-12Z"/></svg>;
+    case "bookmark": return <svg {...p}><path d="M5 3h14v18l-7-5-7 5V3z"/></svg>;
+    case "search": return <svg {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-4.3-4.3"/></svg>;
+    case "play": return <svg {...p}><path d="M6 4v16l14-8z" fill="currentColor"/></svg>;
+    case "arrow-right": return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
+    case "mail": return <svg {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>;
+    case "info": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>;
+    default: return null;
+  }
+}
+
+// ===== Nav Icons =====
+function NavIcon({ name }) {
+  const s = { width: 18, height: 18, stroke: "currentColor", strokeWidth: 1.7, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" };
+  switch (name) {
+    case "home": return <svg viewBox="0 0 24 24" {...s}><path d="M3 12 12 4l9 8"/><path d="M5 10v10h14V10"/></svg>;
+    case "deck": return <svg viewBox="0 0 24 24" {...s}><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h14v14"/></svg>;
+    case "review": return <svg viewBox="0 0 24 24" {...s}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>;
+    case "chart": return <svg viewBox="0 0 24 24" {...s}><path d="M4 20V8"/><path d="M10 20V4"/><path d="M16 20v-9"/><path d="M22 20H2"/></svg>;
+    case "book": return <svg viewBox="0 0 24 24" {...s}><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4Z"/><path d="M4 16a4 4 0 0 1 4-4h12"/></svg>;
+    case "info": return <svg viewBox="0 0 24 24" {...s}><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>;
+    default: return null;
+  }
+}
+
+// ===== Sidebar =====
+function Sidebar({ currentPage, onNav, decks }) {
+  const totalCards = window.QUESTIONS.length;
+  const items = [
+    { id: "home", label: "總覽", icon: "home" },
+    { id: "decks", label: "考古題卡組", icon: "deck", badge: decks },
+    { id: "review", label: "今日複習", icon: "review" },
+    { id: "dashboard", label: "通過率儀表板", icon: "chart" },
+  ];
+  const refs = [
+    { id: "syllabus", label: "命題大綱", icon: "book" },
+    { id: "about", label: "關於本站", icon: "info" },
+  ];
+  return (
+    <aside className="sidebar">
+      <div className="brand">
+        <div className="brand-mark"><MedicalCross size={22} /></div>
+        <div>
+          <div className="brand-name">麻醉科專科護理師<br/>學習平台</div>
+          <div className="brand-tag">ANESTHESIA NP PREP</div>
+        </div>
+      </div>
+      <div className="nav-group">
+        <div className="nav-label">學習</div>
+        {items.map(it => (
+          <div key={it.id} className={"nav-item " + (currentPage === it.id ? "active" : "")} onClick={() => onNav(it.id)}>
+            <span className="nav-icon"><NavIcon name={it.icon} /></span>
+            <span>{it.label}</span>
+            {it.badge != null && <span className="nav-badge">{it.badge}</span>}
+          </div>
+        ))}
+      </div>
+      <div className="nav-group">
+        <div className="nav-label">參考資源</div>
+        {refs.map(it => (
+          <div key={it.id} className={"nav-item " + (currentPage === it.id ? "active" : "")} onClick={() => onNav(it.id)}>
+            <span className="nav-icon"><NavIcon name={it.icon} /></span>
+            <span>{it.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="nav-group">
+        <div className="nav-label">資料統計</div>
+        <div style={{ padding: "10px 12px", fontSize: 12, color: "var(--ink-3)", lineHeight: 1.8, background: "var(--surface-alt)", borderRadius: 10, display: "grid", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="clipboard" size={14}/><span>題庫總數</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{totalCards} 題</strong></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="calendar" size={14}/><span>收錄年度</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{window.YEARS.length} 年</strong></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="stethoscope" size={14}/><span>專科科別</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{window.SPECIALTIES.length} 科</strong></div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+// ===== Auth Screen =====
+function AuthScreen({ onLogin }) {
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "trainee", experience: "", hospital: "", examGroup: "" });
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const submit = async (e) => {
+    e.preventDefault(); setErr("");
+    if (mode === "register") {
+      if (!form.experience) return setErr("請選擇臨床年資");
+      if (!form.hospital.trim()) return setErr("請填寫目前服務醫院");
+      if (!form.examGroup) return setErr("請選擇報考組別");
+    }
+    setLoading(true);
+    try {
+      await new Promise(r => setTimeout(r, 300));
+      const session = mode === "login" ? window.AuthAPI.login({ email: form.email, password: form.password }) : window.AuthAPI.register(form);
+      onLogin(session);
+    } catch (ex) { setErr(ex.message); } finally { setLoading(false); }
+  };
+  return (
+    <div className="auth-stage">
+      <div className="auth-bg-grid"></div>
+      <div className="auth-bg-glow"></div>
+      <div className="auth-shell">
+        <div className="auth-brand-side">
+          <div className="auth-brand">
+            <div className="brand-mark" style={{ width: 52, height: 52 }}><MedicalCross size={28}/></div>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2 }}>麻醉科專科護理師<br/>學習平台</div>
+              <div style={{ fontSize: 11, color: "var(--accent)", marginTop: 6, letterSpacing: "0.16em", fontFamily: "var(--font-mono)" }}>ANESTHESIA NP PREP</div>
+            </div>
+          </div>
+          <div className="auth-tagline">為訓練中的<br/><span style={{ color: "var(--accent)" }}>麻醉專科護理師</span><br/>而生的考試準備平台</div>
+          <ul className="auth-features">
+            <li><div className="auth-feat-icon"><MedIcon name="clipboard" size={16}/></div><div><div className="auth-feat-title">麻醉科歷屆考古題</div><div className="auth-feat-sub">109–114 年通論 + 進階共 958 題</div></div></li>
+            <li><div className="auth-feat-icon"><MedIcon name="lightbulb" size={16}/></div><div><div className="auth-feat-title">閃卡複習 · 翻牌記憶</div><div className="auth-feat-sub">Space 翻牌、← → 切題、1/2/3 評熟練</div></div></li>
+            <li><div className="auth-feat-icon"><MedIcon name="trend-up" size={16}/></div><div><div className="auth-feat-title">通過率儀表板</div><div className="auth-feat-sub">歷年甄審結果視覺化</div></div></li>
+          </ul>
+          <div className="auth-author"><MedIcon name="stethoscope" size={14}/><span>建置者 · 張家豪 醫師</span><span style={{ color: "var(--ink-3)" }}>·</span><span style={{ color: "var(--ink-3)" }}>新竹台大分院 急診醫學部</span></div>
+        </div>
+        <div className="auth-form-side">
+          <div className="auth-tabs">
+            <button type="button" className={"auth-tab " + (mode === "login" ? "active" : "")} onClick={() => { setMode("login"); setErr(""); }}>登入</button>
+            <button type="button" className={"auth-tab " + (mode === "register" ? "active" : "")} onClick={() => { setMode("register"); setErr(""); }}>註冊新帳號</button>
+          </div>
+          <form onSubmit={submit} className="auth-form">
+            <h2 className="auth-heading">{mode === "login" ? "歡迎回來" : "建立你的學習帳號"}</h2>
+            <p className="auth-sub">{mode === "login" ? "請輸入帳號密碼開始今日複習" : "完成註冊即可使用所有功能"}</p>
+            {mode === "register" && (<>
+              <label className="auth-field"><div className="auth-field-label">姓名<span className="req">*</span></div><input type="text" required placeholder="王小華" value={form.name} onChange={e => update("name", e.target.value)}/></label>
+              <label className="auth-field"><div className="auth-field-label">身分</div>
+                <div className="role-grid">
+                  {[{id:"trainee",label:"訓練中 NP",icon:"stethoscope"},{id:"certified",label:"已甄審 NP",icon:"award"},{id:"other",label:"其他",icon:"users"}].map(r => (
+                    <button type="button" key={r.id} className={"role-pick " + (form.role === r.id ? "active" : "")} onClick={() => update("role", r.id)}><MedIcon name={r.icon} size={16}/><span>{r.label}</span></button>
+                  ))}
+                </div>
+              </label>
+              <div className="field-row">
+                <label className="auth-field"><div className="auth-field-label">臨床年資<span className="req">*</span></div><select required value={form.experience} onChange={e => update("experience", e.target.value)}><option value="">請選擇</option><option value="<1">未滿 1 年</option><option value="1-3">1–3 年</option><option value="3-5">3–5 年</option><option value="5-10">5–10 年</option><option value="10+">10 年以上</option></select></label>
+                <label className="auth-field"><div className="auth-field-label">目前服務醫院<span className="req">*</span></div><input type="text" required placeholder="例：新竹台大分院" value={form.hospital} onChange={e => update("hospital", e.target.value)}/></label>
+              </div>
+              <label className="auth-field"><div className="auth-field-label">報考組別<span className="req">*</span></div>
+                <div className="exam-group-grid">
+                  {window.SPECIALTIES.map(s => (
+                    <button type="button" key={s.id} className={"exam-group-pick " + s.className + " " + (form.examGroup === s.id ? "active" : "")} onClick={() => update("examGroup", s.id)}><SpecIcon id={s.id} size={18}/><span>{s.name}</span></button>
+                  ))}
+                </div>
+              </label>
+            </>)}
+            <label className="auth-field"><div className="auth-field-label">Email<span className="req">*</span></div><input type="email" required placeholder="you@example.com" value={form.email} onChange={e => update("email", e.target.value)} autoComplete="email"/></label>
+            <label className="auth-field"><div className="auth-field-label">密碼<span className="req">*</span>{mode === "register" && <span className="hint">至少 6 個字元</span>}</div><input type="password" required minLength={6} placeholder="••••••••" value={form.password} onChange={e => update("password", e.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"}/></label>
+            {err && <div className="auth-error"><MedIcon name="info" size={14}/>{err}</div>}
+            <button type="submit" className="auth-submit" disabled={loading}>{loading ? "處理中…" : <>{mode === "login" ? "登入" : "建立帳號"}<MedIcon name="arrow-right" size={16}/></>}</button>
+            <div className="auth-divider"><span>或</span></div>
+            <button type="button" className="auth-demo" onClick={() => { const guest = { name: "訪客", email: "guest@local", role: "trainee" }; localStorage.setItem("np_session", JSON.stringify(guest)); onLogin(guest); }}><MedIcon name="play" size={14}/><span>以訪客身分試用</span></button>
+            <p className="auth-tos">註冊即表示您同意本平台僅供學習用途；本站內容不作為臨床診療或考試結果之保證。</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== KPI =====
+function Kpi({ label, value, unit, delta, deltaDir, icon, iconCls }) {
+  return (
+    <div className="kpi">
+      {icon && <div className={"kpi-icon " + (iconCls || "")}><MedIcon name={icon} size={16}/></div>}
+      <div className="kpi-label">{label}</div>
+      <div className="kpi-value">{value}{unit && <span className="kpi-unit">{unit}</span>}</div>
+      {delta && <div className={"kpi-delta " + (deltaDir || "")}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">{deltaDir === "up" ? <path d="m5 15 7-7 7 7"/> : <path d="m5 9 7 7 7-7"/>}</svg>{delta} 較去年</div>}
+    </div>
+  );
+}
+
+// ===== Home =====
+function Home({ onNav, onPickDeck }) {
+  const specs = window.SPECIALTIES;
+  const qs = window.QUESTIONS;
+  const stats = window.PASS_STATS;
+  const latest = stats.yearly[stats.yearly.length - 1];
+  const countBySpec = id => qs.filter(q => q.specialty === id).length;
+  return (
+    <div className="fade-in">
+      <div className="hero">
+        <div className="hero-deco-icons"><MedIcon name="stethoscope" size={26}/><MedIcon name="pulse" size={26}/><MedIcon name="pill" size={26}/><MedIcon name="shield" size={26}/></div>
+        <div className="hero-eyebrow"><MedIcon name="cross" size={11}/><span style={{ marginLeft: 6 }}>ANESTHESIA NP · 114 年度</span></div>
+        <h1 className="hero-title">用閃卡複習，把每題弄懂再上考場</h1>
+        <p className="hero-desc">收錄 109–114 年麻醉科專科護理師甄審筆試題目，含「麻醉科通論」與「進階麻醉專科」兩科目。每題附選項與標準答案。翻牌複習，搭配通過率儀表板掌握學習進度與歷年趨勢。</p>
+        <div className="hero-cta-row">
+          <button className="btn-primary" onClick={() => onNav("decks")}><MedIcon name="play" size={14}/><span style={{ marginLeft: 8 }}>開始複習</span></button>
+          <button className="btn-ghost" onClick={() => onNav("dashboard")}><MedIcon name="trend-up" size={14}/><span style={{ marginLeft: 8 }}>查看通過率</span></button>
+        </div>
+        <div style={{ marginTop: 28, display: "flex", alignItems: "center", gap: 10, opacity: 0.55 }}><EkgLine width={420} height={36} color="var(--accent-deep)" /></div>
+      </div>
+      <div className="kpi-row">
+        <Kpi label="題庫總數" value={qs.length} unit="題" icon="clipboard" />
+        <Kpi label="收錄年度" value={`109–${Math.max(...window.YEARS)}`} icon="calendar" />
+        <Kpi label={`${latest.year}年通過率`} value={latest.rate} unit="%" delta="+2.8%" deltaDir="up" icon="target" iconCls="blue" />
+        <Kpi label={`${latest.year}年通過人數`} value={latest.passed.toLocaleString()} unit="人" icon="award" iconCls="warm" />
+      </div>
+      <div style={{ margin: "8px 0 12px", display: "flex", alignItems: "center", gap: 10 }}>
+        <MedIcon name="stethoscope" size={16} />
+        <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ink-3)", margin: 0 }}>依科別瀏覽</h3>
+      </div>
+      <div className="spec-summary-grid">
+        {specs.map(s => (
+          <div key={s.id} className={"spec-summary " + s.className} onClick={() => onNav("decks")} style={{ cursor: "pointer" }}>
+            <div className="spec-icon-tile"><SpecIcon id={s.id} size={22} /></div>
+            <div className="spec-summary-name">{s.name}</div>
+            <div className="spec-summary-count">收錄 {countBySpec(s.id)} 題 · 跨 {window.YEARS.length} 年</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== DeckList =====
+function DeckList({ onPickDeck }) {
+  const [yearFilter, setYearFilter] = useState("all");
+  const [specFilter, setSpecFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const decks = useMemo(() => {
+    const map = new Map();
+    for (const q of window.QUESTIONS) {
+      const key = q.year + "::" + q.specialty;
+      if (!map.has(key)) { const spec = window.SPECIALTIES.find(s => s.id === q.specialty); map.set(key, { year: q.year, specialty: q.specialty, specName: spec.name, className: spec.className, short: spec.short, qs: [] }); }
+      map.get(key).qs.push(q);
+    }
+    return [...map.values()].sort((a, b) => b.year - a.year || a.specialty.localeCompare(b.specialty));
+  }, []);
+  const filtered = decks.filter(d => {
+    if (yearFilter !== "all" && d.year !== Number(yearFilter)) return false;
+    if (specFilter !== "all" && d.specialty !== specFilter) return false;
+    if (typeFilter !== "all" && !d.qs.some(q => q.type === typeFilter)) return false;
+    if (query && !d.qs.some(q => q.stem.includes(query) || q.id.toLowerCase().includes(query.toLowerCase()))) return false;
+    return true;
+  });
+  return (
+    <div className="fade-in">
+      <div className="page-head">
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: "var(--accent-soft)", color: "var(--accent-deep)", display: "grid", placeItems: "center" }}><MedIcon name="bookmark" size={18}/></div>
+            <h1 className="page-title" style={{ margin: 0 }}>考古題卡組</h1>
+          </div>
+          <p className="page-sub">點選任一卡組進入閃卡複習模式 · 共 {filtered.length} 組 / {filtered.reduce((a, d) => a + d.qs.length, 0)} 題</p>
+        </div>
+      </div>
+      <input className="search-input" placeholder="搜尋題目關鍵字或題號（例：心衰、Q-INT-113-01）" value={query} onChange={e => setQuery(e.target.value)} />
+      <div className="filters">
+        <div className="filter-group"><span className="filter-label">年度</span><div className="filter-chips"><button className={"chip " + (yearFilter === "all" ? "active" : "")} onClick={() => setYearFilter("all")}>全部</button>{window.YEARS.map(y => <button key={y} className={"chip " + (yearFilter === String(y) ? "active" : "")} onClick={() => setYearFilter(String(y))}>{y}</button>)}</div></div>
+        <div className="filter-group"><span className="filter-label">科別</span><div className="filter-chips"><button className={"chip " + (specFilter === "all" ? "active" : "")} onClick={() => setSpecFilter("all")}>全部</button>{window.SPECIALTIES.map(s => <button key={s.id} className={"chip " + (specFilter === s.id ? "active" : "")} onClick={() => setSpecFilter(s.id)}>{s.name}</button>)}</div></div>
+        <div className="filter-group"><span className="filter-label">題型</span><div className="filter-chips"><button className={"chip " + (typeFilter === "all" ? "active" : "")} onClick={() => setTypeFilter("all")}>全部</button>{window.QUESTION_TYPES.map(t => <button key={t.id} className={"chip " + (typeFilter === t.id ? "active" : "")} onClick={() => setTypeFilter(t.id)}>{t.name}</button>)}</div></div>
+      </div>
+      <div className="card-grid">
+        {filtered.map(d => <DeckCard key={d.year + d.specialty} deck={d} onPick={() => onPickDeck(d)} />)}
+        {filtered.length === 0 && <div style={{ gridColumn: "1 / -1", padding: 48, textAlign: "center", color: "var(--ink-3)" }}>找不到符合條件的卡組</div>}
+      </div>
+    </div>
+  );
+}
+function DeckCard({ deck, onPick }) {
+  const progressKey = "progress::" + deck.year + "::" + deck.specialty;
+  const progress = Number(localStorage.getItem(progressKey) || 0);
+  const pct = Math.round((progress / deck.qs.length) * 100);
+  const types = [...new Set(deck.qs.map(q => q.type))].map(t => window.QUESTION_TYPES.find(x => x.id === t)?.name).filter(Boolean);
+  return (
+    <div className={"deck-card " + deck.className} onClick={onPick}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div className="spec-icon-tile sm" style={{ width: 32, height: 32 }}><SpecIcon id={deck.specialty} size={18} /></div>
+        <span className="deck-year">{deck.year} 年</span>
+      </div>
+      <span className="deck-spec-tag" style={{ marginTop: 14 }}><span style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor" }}></span>{deck.specName}</span>
+      <div className="deck-title">{deck.year}年度 {deck.specName}考古題</div>
+      <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 2 }}>{types.join(" · ")}</div>
+      <div className="deck-progress"><div className="deck-progress-fill" style={{ width: pct + "%" }}></div></div>
+      <div className="deck-meta">
+        <span className="deck-count"><strong>{deck.qs.length}</strong> 題 · 已複習 <strong>{progress}</strong></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--ink-3)" }}><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    </div>
+  );
+}
+
+// ===== Flashcard =====
+function Flashcard({ deck, onExit }) {
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [reviewed, setReviewed] = useState(() => new Set());
+  const total = deck.qs.length;
+  const q = deck.qs[idx];
+  const spec = window.SPECIALTIES.find(s => s.id === q.specialty);
+  const type = window.QUESTION_TYPES.find(t => t.id === q.type);
+  const next = useCallback(() => { setFlipped(false); setIdx(i => Math.min(total - 1, i + 1)); }, [total]);
+  const prev = useCallback(() => { setFlipped(false); setIdx(i => Math.max(0, i - 1)); }, []);
+  const rate = (level) => {
+    const k = "progress::" + deck.year + "::" + deck.specialty;
+    const newSet = new Set(reviewed); newSet.add(q.id); setReviewed(newSet);
+    localStorage.setItem(k, String(newSet.size));
+    setTimeout(next, 200);
+  };
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === " ") { e.preventDefault(); setFlipped(f => !f); }
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "ArrowLeft") prev();
+      else if (e.key === "Escape") onExit();
+      else if (e.key === "1") rate("again");
+      else if (e.key === "2") rate("hard");
+      else if (e.key === "3") rate("good");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [next, prev, q.id, deck]);
+  const pct = Math.round(((idx + 1) / total) * 100);
+  return (
+    <div className={"fade-in flash-stage " + spec.className}>
+      <div className="flash-toolbar">
+        <button className="flash-back" onClick={onExit}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>返回卡組</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span className="flash-tag spec">{spec.name}</span>
+          <span className="flash-tag year">{q.year} 年</span>
+          <span className="flash-tag">{type.name}</span>
+        </div>
+        <div className="flash-progress"><strong>{idx + 1}</strong> / {total}</div>
+      </div>
+      <div className="flash-bar"><div className="flash-bar-fill" style={{ width: pct + "%" }}></div></div>
+      <div className={"flash-card " + (flipped ? "flipped" : "")}>
+        <div className="flash-card-inner">
+          <div className="flash-face front">
+            <div className="flash-meta">
+              <div className="spec-icon-tile sm" style={{ marginRight: 4 }}><SpecIcon id={q.specialty} size={16}/></div>
+              <span className="flash-tag" style={{ fontFamily: "var(--font-mono)" }}>{q.id}</span>
+              <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.06em", marginLeft: "auto" }}>請先思考再翻牌</span>
+            </div>
+            <div className="flash-stem">
+              <span className="stem-label">題目</span>
+              <div>{q.stem}</div>
+              <ol className="flash-options">
+                {q.options.map(o => <li key={o.key} className="flash-option"><span className="flash-option-key">({o.key})</span><span>{o.text}</span></li>)}
+              </ol>
+            </div>
+            <div className="flash-hint"><span className="kbd">Space</span> 翻牌查看解析<div className="sep"></div><span className="kbd">←</span> <span className="kbd">→</span> 切換題目</div>
+          </div>
+          <div className="flash-face back">
+            <div className="flash-meta">
+              <div className="spec-icon-tile sm" style={{ marginRight: 4 }}><SpecIcon id={q.specialty} size={16}/></div>
+              <span className="flash-tag spec">{spec.name}</span>
+              <span className="flash-tag year">{q.year}</span>
+              <span className="flash-tag" style={{ fontFamily: "var(--font-mono)" }}>{q.id}</span>
+            </div>
+            <div className="flash-answer-row">
+              <div className="flash-answer-key">{q.answer}</div>
+              <div><div className="flash-answer-label">正確答案</div><div className="flash-answer-text">{q.answerText}</div></div>
+            </div>
+            <div className="flash-explain">
+              {q.explanation ? (
+                <React.Fragment>
+                  <h4><MedIcon name="lightbulb" size={11}/> 題解</h4><p>{q.explanation.summary}</p>
+                  {q.explanation.points && <React.Fragment>
+                    <h4><MedIcon name="bookmark" size={11}/> 重點整理</h4>
+                    <ul>{q.explanation.points.map((p, i) => <li key={i}>{p}</li>)}</ul>
+                  </React.Fragment>}
+                  {q.explanation.keyword && <React.Fragment>
+                    <h4><MedIcon name="search" size={11}/> 關鍵字</h4>
+                    <p style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--ink-2)" }}>{q.explanation.keyword}</p>
+                  </React.Fragment>}
+                </React.Fragment>
+              ) : (
+                <div style={{ padding: "20px 0", color: "var(--ink-3)", fontSize: 13, lineHeight: 1.7 }}>
+                  <h4 style={{ color: "var(--accent)" }}><MedIcon name="lightbulb" size={11}/> 解答</h4>
+                  <p>本題正確答案為 <strong style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}>({q.answer})</strong>　{q.answerText}</p>
+                  <p style={{ fontSize: 12, marginTop: 12, color: "var(--ink-3)" }}>※ 詳細題解尚未建置，可參考衛福部公告之原始試題與標準答案。</p>
+                </div>
+              )}
+              <div className="flash-source"><div className="flash-source-label"><MedIcon name="book-open" size={10}/> 參考來源</div>{q.source}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {flipped ? (
+        <div className="flash-actions">
+          <button className="flash-btn again" onClick={() => rate("again")}><span className="lab">再練一次</span><span className="sub">完全不會 · <span className="kbd">1</span></span></button>
+          <button className="flash-btn hard" onClick={() => rate("hard")}><span className="lab">有點難</span><span className="sub">勉強答對 · <span className="kbd">2</span></span></button>
+          <button className="flash-btn good" onClick={() => rate("good")}><span className="lab">掌握了</span><span className="sub">熟練 · <span className="kbd">3</span></span></button>
+        </div>
+      ) : (
+        <div className="flash-nav">
+          <button className="icon-btn" onClick={prev} disabled={idx === 0}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button className="flip-btn" onClick={() => setFlipped(true)}>顯示答案與題解</button>
+          <button className="icon-btn" onClick={next} disabled={idx === total - 1}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== Dashboard =====
+function YearlyChart({ data }) {
+  const W = 640, H = 280, PAD = { l: 40, r: 24, t: 28, b: 36 };
+  const innerW = W - PAD.l - PAD.r, innerH = H - PAD.t - PAD.b;
+  const maxApplied = Math.max(...data.map(d => d.applied));
+  const yTicks = [0, 25, 50, 75, 100];
+  const barW = (innerW / data.length) * 0.42, bandW = innerW / data.length;
+  const linePath = data.map((d, i) => { const x = PAD.l + bandW * i + bandW / 2; const y = PAD.t + innerH - (d.rate / 100) * innerH; return (i === 0 ? "M" : "L") + x + " " + y; }).join(" ");
+  return (
+    <div className="panel">
+      <div className="panel-head"><div><div className="panel-title">年度報考與通過率趨勢</div><div className="panel-sub">109–113 年 · 報考人數（長條）vs 通過率（折線）</div></div>
+        <div className="legend"><span><span className="legend-dot" style={{ background: "color-mix(in oklch, var(--accent) 40%, transparent)", border: "1px solid var(--accent)" }}></span>報考人數</span><span><span className="legend-dot" style={{ background: "var(--accent)", boxShadow: "0 0 8px var(--accent-glow)" }}></span>通過率</span></div>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="chart-wrap" style={{ width: "100%", height: "auto" }}>
+        <g className="chart-grid">{yTicks.map(t => { const y = PAD.t + innerH - (t / 100) * innerH; return <line key={t} x1={PAD.l} y1={y} x2={W - PAD.r} y2={y} strokeWidth="1"/>; })}</g>
+        <g className="chart-axis">{yTicks.map(t => <text key={t} x={PAD.l - 8} y={PAD.t + innerH - (t / 100) * innerH + 4} textAnchor="end">{t}%</text>)}</g>
+        {data.map((d, i) => { const x = PAD.l + bandW * i + bandW / 2 - barW / 2; const h = (d.applied / maxApplied) * innerH * 0.85; const y = PAD.t + innerH - h; return (
+          <g key={d.year}><rect x={x} y={y} width={barW} height={h} fill="url(#barGrad)" stroke="var(--accent)" strokeWidth="1" rx="3" opacity="0.85"/><text x={PAD.l + bandW * i + bandW / 2} y={H - PAD.b + 18} textAnchor="middle" className="chart-axis" style={{ fontSize: 11, fill: "var(--ink-3)", fontFamily: "var(--font-mono)" }}>{d.year}</text><text x={PAD.l + bandW * i + bandW / 2} y={y - 6} textAnchor="middle" style={{ fontSize: 10, fill: "var(--ink-2)", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-mono)" }}>{d.applied.toLocaleString()}</text></g>
+        ); })}
+        <defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--accent)" stopOpacity="0.6"/><stop offset="100%" stopColor="var(--accent)" stopOpacity="0.15"/></linearGradient></defs>
+        <path d={linePath} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 6px var(--accent-glow))" }}/>
+        {data.map((d, i) => { const x = PAD.l + bandW * i + bandW / 2; const y = PAD.t + innerH - (d.rate / 100) * innerH; return (
+          <g key={d.year}><circle cx={x} cy={y} r="5" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2.5" style={{ filter: "drop-shadow(0 0 6px var(--accent-glow))" }}/><text x={x} y={y - 12} textAnchor="middle" style={{ fontSize: 11, fontWeight: 700, fill: "var(--accent)", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-mono)" }}>{d.rate}%</text></g>
+        ); })}
+      </svg>
+    </div>
+  );
+}
+function SpecRingChart({ data, specs }) {
+  const total = data.reduce((a, d) => a + d.passed, 0);
+  const cx = 130, cy = 130, r = 88, sw = 26;
+  let cum = 0;
+  const palette = { internal: "var(--blue)", surgery: "var(--rose)", pediatric: "var(--warm)", obgyn: "var(--pink)", psych: "var(--violet)", anesth: "var(--green)" };
+  const C = 2 * Math.PI * r;
+  const segs = data.map(d => { const pct = d.passed / total; const len = C * pct; const offset = -cum; cum += len; const spec = specs.find(s => s.id === d.id); return { ...d, pct, len, offset, color: palette[d.id], name: spec.name }; });
+  return (
+    <div className="panel">
+      <div className="panel-head"><div><div className="panel-title">113年通過人數 · 科別比例</div><div className="panel-sub">總通過 {total.toLocaleString()} 人</div></div></div>
+      <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+        <svg viewBox="0 0 260 260" style={{ width: 200, height: 200, flexShrink: 0 }}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--surface-alt)" strokeWidth={sw}/>
+          {segs.map(s => <circle key={s.id} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw} strokeDasharray={`${s.len} ${C - s.len}`} strokeDashoffset={s.offset} transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="butt"/>)}
+          <text x={cx} y={cy - 4} textAnchor="middle" style={{ fontSize: 28, fontWeight: 700, fill: "var(--ink)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em", fontFamily: "var(--font-mono)" }}>{total.toLocaleString()}</text>
+          <text x={cx} y={cy + 18} textAnchor="middle" style={{ fontSize: 10, fill: "var(--accent)", letterSpacing: "0.12em", fontFamily: "var(--font-mono)" }}>TOTAL PASS</text>
+        </svg>
+        <div style={{ display: "grid", gap: 8, flex: 1, fontSize: 13 }}>
+          {segs.map(s => <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 10, height: 10, borderRadius: 99, background: s.color }}></span><span style={{ flex: 1 }}>{s.name}</span><span style={{ fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>{s.passed}</span><span style={{ color: "var(--ink-3)", fontVariantNumeric: "tabular-nums", width: 44, textAlign: "right" }}>{(s.pct * 100).toFixed(1)}%</span></div>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+function SpecBreakdown({ data, specs }) {
+  const palette = { internal: "var(--blue)", surgery: "var(--rose)", pediatric: "var(--warm)", obgyn: "var(--pink)", psych: "var(--violet)", anesth: "var(--green)" };
+  const sorted = [...data].sort((a, b) => b.rate - a.rate);
+  return (
+    <div className="panel">
+      <div className="panel-head"><div><div className="panel-title">113年各科通過率</div><div className="panel-sub">通過 / 報考</div></div></div>
+      <div style={{ display: "grid", gap: 14 }}>
+        {sorted.map(d => { const spec = specs.find(s => s.id === d.id); return (
+          <div key={d.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 13 }}><span style={{ fontWeight: 500 }}>{spec.name}</span><span style={{ fontVariantNumeric: "tabular-nums", color: "var(--ink-2)" }}><strong style={{ color: "var(--ink)" }}>{d.rate}%</strong><span style={{ color: "var(--ink-3)", marginLeft: 8, fontSize: 12 }}>{d.passed} / {d.applied}</span></span></div>
+            <div style={{ height: 8, background: "var(--surface-alt)", borderRadius: 99, overflow: "hidden" }}><div style={{ width: d.rate + "%", height: "100%", background: palette[d.id], borderRadius: 99, transition: "width 0.6s", boxShadow: `0 0 12px color-mix(in oklch, ${palette[d.id]} 50%, transparent)` }}></div></div>
+          </div>
+        ); })}
+      </div>
+    </div>
+  );
+}
+function AgeBucket({ data }) {
+  const max = Math.max(...data.map(d => d.val));
+  const total = data.reduce((a, d) => a + d.val, 0);
+  return (
+    <div className="panel">
+      <div className="panel-head"><div><div className="panel-title">113年通過者 · 年齡分布</div><div className="panel-sub">總人數 {total.toLocaleString()} 人</div></div></div>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 14, height: 180, padding: "20px 8px 0" }}>
+        {data.map(d => { const h = (d.val / max) * 100; return (
+          <div key={d.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, height: "100%" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{d.val}</div>
+            <div style={{ width: "100%", flex: 1, display: "flex", alignItems: "flex-end" }}><div style={{ width: "100%", height: h + "%", background: "linear-gradient(180deg, var(--accent) 0%, oklch(0.55 0.18 220) 100%)", borderRadius: "6px 6px 2px 2px", minHeight: 4, boxShadow: "0 0 16px var(--accent-glow)" }}></div></div>
+            <div style={{ fontSize: 11, color: "var(--ink-3)", textAlign: "center" }}>{d.label}</div>
+          </div>
+        ); })}
+      </div>
+    </div>
+  );
+}
+function FullSpecTable({ data, specs, avgRate }) {
+  return (
+    <div className="panel">
+      <div className="panel-head"><div><div className="panel-title">113年甄審結果明細</div><div className="panel-sub">五年平均通過率 {avgRate}%</div></div></div>
+      <table className="spec-table"><thead><tr><th style={{ width: 180 }}>科別</th><th>報考</th><th>通過</th><th>未通過</th><th style={{ width: 240 }}>通過率</th></tr></thead>
+        <tbody>{data.map(d => { const spec = specs.find(s => s.id === d.id); return (
+          <tr key={d.id}><td><div className="spec-name"><span className={"spec-icon-tile sm " + spec.className}><SpecIcon id={spec.id} size={16}/></span>{spec.name}</div></td><td>{d.applied.toLocaleString()}</td><td><strong>{d.passed.toLocaleString()}</strong></td><td style={{ color: "var(--ink-3)" }}>{(d.applied - d.passed).toLocaleString()}</td><td><div className="pass-cell"><div className="mini-bar"><div className="mini-bar-fill" style={{ width: d.rate + "%" }}></div></div><span style={{ width: 56, textAlign: "right", fontWeight: 600 }}>{d.rate}%</span></div></td></tr>
+        ); })}</tbody>
+      </table>
+    </div>
+  );
+}
+function Dashboard() {
+  const stats = window.PASS_STATS;
+  const specs = window.SPECIALTIES;
+  const latest = stats.yearly[stats.yearly.length - 1];
+  const prev = stats.yearly[stats.yearly.length - 2];
+  const totalAll = stats.yearly.reduce((a, y) => a + y.passed, 0);
+  const avgRate = (stats.yearly.reduce((a, y) => a + y.rate, 0) / stats.yearly.length).toFixed(1);
+  return (
+    <div className="fade-in">
+      <div className="page-head"><div><h1 className="page-title">甄審通過率儀表板</h1><p className="page-sub">109–{latest.year} 年度麻醉專科護理師甄審筆試結果統計 · 示範資料（實際請以衛福部公告為準）</p></div></div>
+      <div className="kpi-row">
+        <Kpi label={`${latest.year}年通過人數`} value={latest.passed.toLocaleString()} unit="人" delta={`+${latest.passed - prev.passed} 人`} deltaDir="up" icon="users" iconCls="warm" />
+        <Kpi label={`${latest.year}年通過率`} value={latest.rate} unit="%" delta={`+${(latest.rate - prev.rate).toFixed(1)}%`} deltaDir="up" icon="target" iconCls="blue" />
+        <Kpi label={`${latest.year}年報考人數`} value={latest.applied.toLocaleString()} unit="人" icon="clipboard" />
+        <Kpi label="5年累計通過" value={totalAll.toLocaleString()} unit="人" icon="award" iconCls="rose" />
+      </div>
+      <div className="dash-grid"><YearlyChart data={stats.yearly} /><SpecRingChart data={stats.bySpecialty113} specs={specs} /></div>
+      <div className="dash-grid-2" style={{ marginBottom: 14 }}><SpecBreakdown data={stats.bySpecialty113} specs={specs} /><AgeBucket data={stats.ageBucket} /></div>
+      <FullSpecTable data={stats.bySpecialty113} specs={specs} avgRate={avgRate} />
+    </div>
+  );
+}
+
+// ===== Review Today =====
+function WeeklyHeatmap() {
+  const weeks = 12, days = 7;
+  const labels = ["一","二","三","四","五","六","日"];
+  const data = [];
+  for (let w = 0; w < weeks; w++) for (let d = 0; d < days; d++) { const seed = (w * 7 + d * 13) % 100; const v = seed > 75 ? 4 : seed > 55 ? 3 : seed > 35 ? 2 : seed > 18 ? 1 : 0; data.push({ w, d, v }); }
+  const colors = ["var(--surface-alt)","oklch(0.32 0.08 195)","oklch(0.45 0.12 195)","oklch(0.60 0.15 195)","oklch(0.78 0.18 195)"];
+  return (
+    <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: 18, fontSize: 10, color: "var(--ink-3)" }}>{labels.map(l => <div key={l} style={{ height: 14 }}>{l}</div>)}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${weeks}, 1fr)`, gap: 4 }}>
+          {Array.from({ length: weeks }).map((_, w) => <div key={w} style={{ display: "grid", gridTemplateRows: `repeat(${days}, 14px)`, gap: 4 }}>{Array.from({ length: days }).map((_, d) => { const cell = data.find(x => x.w === w && x.d === d); return <div key={d} style={{ background: colors[cell.v], borderRadius: 3 }} title={`Week ${w+1} · ${labels[d]} · ${cell.v} 題`}></div>; })}</div>)}
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, fontSize: 11, color: "var(--ink-3)" }}>
+          <span>12 週前</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>少{colors.map((c, i) => <span key={i} style={{ width: 12, height: 12, background: c, borderRadius: 3 }}></span>)}多</div>
+          <span>本週</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+function ReviewToday({ onPickDeck }) {
+  const all = window.QUESTIONS;
+  const todayPicks = useMemo(() => { const shuffled = [...all].sort(() => Math.random() - 0.5); return shuffled.slice(0, 8); }, []);
+  const grouped = useMemo(() => { const map = new Map(); for (const q of todayPicks) { const key = q.year + "::" + q.specialty; if (!map.has(key)) { const spec = window.SPECIALTIES.find(s => s.id === q.specialty); map.set(key, { year: q.year, specialty: q.specialty, specName: spec.name, className: spec.className, short: spec.short, qs: [] }); } map.get(key).qs.push(q); } return [...map.values()]; }, [todayPicks]);
+  const mixedDeck = useMemo(() => ({ year: "綜合", specialty: "mixed", specName: "今日推薦", className: "", short: "今", qs: todayPicks }), [todayPicks]);
+  return (
+    <div className="fade-in">
+      <div className="page-head"><div><h1 className="page-title">今日複習</h1><p className="page-sub">系統依據間隔重複原則，為你挑選 {todayPicks.length} 題綜合練習</p></div><button className="btn-primary" onClick={() => onPickDeck(mixedDeck)}>開始今日練習 →</button></div>
+      <div className="panel" style={{ marginBottom: 14 }}><div className="panel-head"><div><div className="panel-title">本週學習進度</div><div className="panel-sub">連續複習可提升記憶留存率</div></div></div><WeeklyHeatmap /></div>
+      <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ink-3)", margin: "8px 0 12px" }}>今日題目來自</h3>
+      <div className="card-grid">
+        {grouped.map(d => { const spec = window.SPECIALTIES.find(s => s.id === d.specialty); return (
+          <div key={d.year + d.specialty} className={"deck-card " + spec.className} onClick={() => onPickDeck(d)}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span className="deck-spec-tag"><span style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor" }}></span>{d.specName}</span><span className="deck-year">{d.year} 年</span></div>
+            <div className="deck-title">{d.specName} · {d.qs.length} 題</div>
+            <div className="deck-meta"><span className="deck-count">本日抽選</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--ink-3)" }}><path d="m9 18 6-6-6-6"/></svg></div>
+          </div>
+        ); })}
+      </div>
+    </div>
+  );
+}
+
+// ===== Syllabus =====
+function Syllabus() {
+  const topics = {
+    anesth_general:  ["專科護理師角色","麻醉相關法規","醫病溝通","實證與品質","教學與研究","麻醉護理倫理"],
+    anesth_advanced: ["麻醉前評估","全身麻醉","區域麻醉","監測麻醉照護(MAC)","麻醉併發症","疼痛管理","麻醉藥理","術後恢復"],
+  };
+  return (
+    <div className="fade-in">
+      <div className="page-head"><div><h1 className="page-title">命題大綱</h1><p className="page-sub">依據衛生福利部公告之專科護理師甄審筆試命題範圍整理</p></div></div>
+      <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+        {window.SPECIALTIES.map(s => (
+          <div key={s.id} className={"card " + s.className} style={{ padding: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}><div className="spec-icon-tile"><SpecIcon id={s.id} size={22}/></div><div style={{ fontWeight: 700, fontSize: 16 }}>{s.name}</div></div>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 6 }}>{topics[s.id].map(t => <li key={t} style={{ fontSize: 13.5, color: "var(--ink-2)", display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 4, height: 4, borderRadius: 99, background: "var(--spec)" }}></span>{t}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== About =====
+function About() {
+  return (
+    <div className="fade-in" style={{ maxWidth: 720 }}>
+      <div className="page-head"><div><h1 className="page-title">關於本站</h1><p className="page-sub">為訓練中的台灣麻醉專科護理師提供考試準備工具</p></div></div>
+      <div className="card" style={{ padding: 28, lineHeight: 1.85, fontSize: 14.5 }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center", padding: "18px 20px", marginBottom: 22, background: "linear-gradient(135deg, var(--accent-soft) 0%, #f6f5ed 100%)", borderRadius: 12, border: "1px solid color-mix(in oklch, var(--accent) 18%, transparent)" }}>
+          <div style={{ width: 56, height: 56, borderRadius: 12, background: "white", color: "var(--accent-deep)", display: "grid", placeItems: "center", border: "1px solid color-mix(in oklch, var(--accent) 22%, transparent)", flexShrink: 0 }}><MedIcon name="stethoscope" size={28}/></div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: "var(--accent-deep)", textTransform: "uppercase", marginBottom: 4 }}>網站建置者 · Site Author</div>
+            <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em" }}>張家豪 醫師</div>
+            <div style={{ fontSize: 13, color: "var(--ink-2)", marginTop: 2 }}>新竹台大分院 · 急診醫學部</div>
+          </div>
+        </div>
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "0 0 8px" }}>網站目的</h3>
+        <p style={{ marginTop: 0 }}>本平台專為訓練中之台灣麻醉專科護理師（Anesthesia Nurse Practitioner）整理歷屆甄審筆試考古題，以「閃卡」形式輔助記憶複習。每題附原始選項與標準答案。</p>
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "20px 0 8px" }}>科目範圍</h3>
+        <p style={{ marginTop: 0 }}>麻醉科專科護理通論、進階麻醉專科護理 共 2 科目，109–114 年累計 958 題。</p>
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "20px 0 8px" }}>使用說明</h3>
+        <ul style={{ marginTop: 0, paddingLeft: 18 }}>
+          <li>於「考古題卡組」依年度／科別／題型篩選</li>
+          <li>進入卡組後以閃卡模式學習，<span className="kbd">Space</span> 翻牌、<span className="kbd">←</span> <span className="kbd">→</span> 切題</li>
+          <li>翻牌後以 <span className="kbd">1</span>／<span className="kbd">2</span>／<span className="kbd">3</span> 標記熟練度</li>
+          <li>「通過率儀表板」可查看歷年甄審結果統計</li>
+        </ul>
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "20px 0 8px" }}>免責聲明</h3>
+        <p style={{ marginTop: 0, color: "var(--ink-2)" }}>本站內容僅供學習參考，不作為任何臨床診療或考試結果之保證。臨床判斷請依據最新指引與專業判讀。</p>
+      </div>
+    </div>
+  );
+}
+
+// ===== Main App =====
+function App() {
+  const [page, setPage] = useState("home");
+  const [activeDeck, setActiveDeck] = useState(null);
+  const [user, setUser] = useState(() => window.AuthAPI.current());
+  const [menuOpen, setMenuOpen] = useState(false);
+  const allDecks = useMemo(() => { const map = new Map(); for (const q of window.QUESTIONS) { const key = q.year + "::" + q.specialty; if (!map.has(key)) map.set(key, true); } return map.size; }, []);
+  const handlePickDeck = (deck) => setActiveDeck(deck);
+  const handleExitDeck = () => setActiveDeck(null);
+  const handleLogout = () => { window.AuthAPI.logout(); setUser(null); setMenuOpen(false); setActiveDeck(null); setPage("home"); };
+  useEffect(() => { if (!menuOpen) return; const onClick = (e) => { if (!e.target.closest(".user-menu")) setMenuOpen(false); }; document.addEventListener("click", onClick); return () => document.removeEventListener("click", onClick); }, [menuOpen]);
+  if (!user) return <AuthScreen onLogin={setUser} />;
+  let content;
+  if (activeDeck) content = <Flashcard deck={activeDeck} onExit={handleExitDeck} />;
+  else if (page === "home") content = <Home onNav={setPage} onPickDeck={handlePickDeck} />;
+  else if (page === "decks") content = <DeckList onPickDeck={handlePickDeck} />;
+  else if (page === "review") content = <ReviewToday onPickDeck={handlePickDeck} />;
+  else if (page === "dashboard") content = <Dashboard />;
+  else if (page === "syllabus") content = <Syllabus />;
+  else if (page === "about") content = <About />;
+  const initials = (user.name || "U").trim().slice(0, 2).toUpperCase();
+  const roleLabel = user.role === "certified" ? "已甄審 NP" : user.role === "other" ? "訪客 / 其他" : "訓練中 NP";
+  return (
+    <div className="app">
+      <Sidebar currentPage={page} onNav={(p) => { setActiveDeck(null); setPage(p); }} decks={allDecks} />
+      <header className="topbar">
+        <div className="topbar-left">
+          <MedIcon name="pulse" size={16}/><span style={{ color: "var(--ink-3)" }}>Anesthesia NP Prep Platform</span>
+          <span style={{ width: 1, height: 14, background: "var(--border)" }}></span>
+          <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>{activeDeck ? "閃卡複習" : page === "home" ? "總覽" : page === "decks" ? "考古題卡組" : page === "review" ? "今日複習" : page === "dashboard" ? "甄審通過率儀表板" : page === "syllabus" ? "命題大綱" : "關於本站"}</span>
+        </div>
+        <div className="topbar-right">
+          <div className="topbar-time"><MedIcon name="calendar" size={13}/><span>114 年度</span></div>
+          <div className="topbar-author">
+            <div className="topbar-author-avatar"><MedIcon name="stethoscope" size={16}/></div>
+            <div className="topbar-author-text">
+              <div className="topbar-author-label">SITE AUTHOR</div>
+              <div className="topbar-author-name">張家豪 醫師<span className="sep-dot"></span><span className="topbar-author-affil">新竹台大分院 急診醫學部</span></div>
+              <div className="topbar-author-contact"><a href="mailto:g56017@hch.gov.tw" className="contact-chip" title="Email"><MedIcon name="mail" size={11}/><span>g56017@hch.gov.tw</span></a></div>
+            </div>
+          </div>
+          <div className="user-menu">
+            <button className="user-chip" onClick={(e) => { e.stopPropagation(); setMenuOpen(o => !o); }}>
+              <div className="user-avatar">{initials}</div>
+              <div className="user-chip-text"><div className="user-chip-name">{user.name}</div><div className="user-chip-role">{roleLabel}</div></div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--ink-3)" }}><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            {menuOpen && (
+              <div className="user-pop">
+                <div className="user-pop-head"><div className="user-pop-name">{user.name}</div><div className="user-pop-mail">{user.email}</div></div>
+                <button className="user-pop-item" onClick={() => { setPage("about"); setMenuOpen(false); }}><MedIcon name="info" size={15}/>關於本站</button>
+                <button className="user-pop-item danger" onClick={handleLogout}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>登出</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+      <main className="main">{content}</main>
+    </div>
+  );
+}
+
+// Load questions from external JSON before rendering
+function Loading() {
+  return (
+    <div style={{position:"fixed",inset:0,display:"grid",placeItems:"center",background:"var(--bg)",color:"var(--ink-1)"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:48,height:48,border:"3px solid var(--surface-alt)",borderTopColor:"var(--accent)",borderRadius:"50%",margin:"0 auto 16px",animation:"spin 0.8s linear infinite"}}></div>
+        <div style={{fontSize:14,color:"var(--ink-2)",letterSpacing:"0.06em"}}>載入題庫中…</div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    </div>
+  );
+}
+
+const rootEl = ReactDOM.createRoot(document.getElementById("root"));
+rootEl.render(<Loading />);
+
+fetch("questions.json")
+  .then(r => r.json())
+  .then(data => {
+    window.QUESTIONS = data;
+    rootEl.render(<App />);
+  })
+  .catch(err => {
+    console.error("Failed to load questions.json", err);
+    window.QUESTIONS = [];
+    rootEl.render(<App />);
+  });
+  </script>
+</body>
+</html>
