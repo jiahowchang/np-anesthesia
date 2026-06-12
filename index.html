@@ -1022,13 +1022,19 @@ function DeckCard({ deck, onPick }) {
 function Flashcard({ deck, onExit }) {
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [selected, setSelected] = useState(null);
   const [reviewed, setReviewed] = useState(() => new Set());
   const total = deck.qs.length;
   const q = deck.qs[idx];
   const spec = window.SPECIALTIES.find(s => s.id === q.specialty);
   const type = window.QUESTION_TYPES.find(t => t.id === q.type);
-  const next = useCallback(() => { setFlipped(false); setIdx(i => Math.min(total - 1, i + 1)); }, [total]);
-  const prev = useCallback(() => { setFlipped(false); setIdx(i => Math.max(0, i - 1)); }, []);
+  const next = useCallback(() => { setFlipped(false); setSelected(null); setIdx(i => Math.min(total - 1, i + 1)); }, [total]);
+  const prev = useCallback(() => { setFlipped(false); setSelected(null); setIdx(i => Math.max(0, i - 1)); }, []);
+  const pickAnswer = (key) => {
+    if (selected) return;  // already answered
+    setSelected(key);
+    setTimeout(() => setFlipped(true), 700);  // auto-flip after brief feedback
+  };
   const rate = (level) => {
     const k = "progress::" + deck.year + "::" + deck.specialty;
     const newSet = new Set(reviewed); newSet.add(q.id); setReviewed(newSet);
@@ -1041,13 +1047,16 @@ function Flashcard({ deck, onExit }) {
       else if (e.key === "ArrowRight") next();
       else if (e.key === "ArrowLeft") prev();
       else if (e.key === "Escape") onExit();
-      else if (e.key === "1") rate("again");
-      else if (e.key === "2") rate("hard");
-      else if (e.key === "3") rate("good");
+      else if (!flipped && !selected && ["A","B","C","D","a","b","c","d"].includes(e.key)) {
+        pickAnswer(e.key.toUpperCase());
+      }
+      else if (flipped && e.key === "1") rate("again");
+      else if (flipped && e.key === "2") rate("hard");
+      else if (flipped && e.key === "3") rate("good");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, q.id, deck]);
+  }, [next, prev, q.id, deck, selected, flipped]);
   const pct = Math.round(((idx + 1) / total) * 100);
   return (
     <div className={"fade-in flash-stage " + spec.className}>
@@ -1067,16 +1076,48 @@ function Flashcard({ deck, onExit }) {
             <div className="flash-meta">
               <div className="spec-icon-tile sm" style={{ marginRight: 4 }}><SpecIcon id={q.specialty} size={16}/></div>
               <span className="flash-tag" style={{ fontFamily: "var(--font-mono)" }}>{q.id}</span>
-              <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.06em", marginLeft: "auto" }}>請先思考再翻牌</span>
+              <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.06em", marginLeft: "auto" }}>
+                {selected ? (selected === q.answer ? "✓ 答對了" : "✗ 答錯，正確為 (" + q.answer + ")") : "點選作答（A／B／C／D）"}
+              </span>
             </div>
             <div className="flash-stem">
               <span className="stem-label">題目</span>
               <div>{q.stem}</div>
               <ol className="flash-options">
-                {q.options.map(o => <li key={o.key} className="flash-option"><span className="flash-option-key">({o.key})</span><span>{o.text}</span></li>)}
+                {q.options.map(o => {
+                  const isCorrect = o.key === q.answer;
+                  const isPicked = o.key === selected;
+                  let bg = "var(--surface-alt)";
+                  let border = "1px solid transparent";
+                  let color = undefined;
+                  if (selected) {
+                    if (isCorrect) {
+                      bg = "color-mix(in oklch, oklch(0.65 0.18 150) 18%, var(--surface-alt))";
+                      border = "1px solid oklch(0.65 0.18 150)";
+                    } else if (isPicked) {
+                      bg = "color-mix(in oklch, oklch(0.60 0.20 25) 18%, var(--surface-alt))";
+                      border = "1px solid oklch(0.60 0.20 25)";
+                    }
+                  }
+                  return (
+                    <li key={o.key} className="flash-option" onClick={() => pickAnswer(o.key)}
+                        style={{ background: bg, border, cursor: selected ? "default" : "pointer", transition: "all 0.18s", userSelect: "none" }}>
+                      <span className="flash-option-key" style={{ color: selected && (isCorrect || isPicked) ? (isCorrect ? "oklch(0.78 0.18 150)" : "oklch(0.75 0.20 25)") : undefined }}>({o.key})</span>
+                      <span style={{ flex: 1 }}>{o.text}</span>
+                      {selected && isCorrect && <span style={{ color: "oklch(0.78 0.18 150)", fontWeight: 700, marginLeft: 8 }}>✓</span>}
+                      {selected && isPicked && !isCorrect && <span style={{ color: "oklch(0.75 0.20 25)", fontWeight: 700, marginLeft: 8 }}>✗</span>}
+                    </li>
+                  );
+                })}
               </ol>
             </div>
-            <div className="flash-hint"><span className="kbd">Space</span> 翻牌查看解析<div className="sep"></div><span className="kbd">←</span> <span className="kbd">→</span> 切換題目</div>
+            <div className="flash-hint">
+              <span className="kbd">A</span> <span className="kbd">B</span> <span className="kbd">C</span> <span className="kbd">D</span> 作答
+              <div className="sep"></div>
+              <span className="kbd">Space</span> 直接翻牌
+              <div className="sep"></div>
+              <span className="kbd">←</span> <span className="kbd">→</span> 切換題目
+            </div>
           </div>
           <div className="flash-face back">
             <div className="flash-meta">
@@ -1141,7 +1182,7 @@ function Flashcard({ deck, onExit }) {
       ) : (
         <div className="flash-nav">
           <button className="icon-btn" onClick={prev} disabled={idx === 0}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-          <button className="flip-btn" onClick={() => setFlipped(true)}>顯示答案與題解</button>
+          <button className="flip-btn" onClick={() => setFlipped(true)}>{selected ? "查看完整題解" : "略過作答，直接看解答"}</button>
           <button className="icon-btn" onClick={next} disabled={idx === total - 1}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
         </div>
       )}
