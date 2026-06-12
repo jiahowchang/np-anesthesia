@@ -734,6 +734,8 @@ function MedIcon({ name, size = 18 }) {
     case "arrow-right": return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
     case "mail": return <svg {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>;
     case "info": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>;
+    case "atom": return <svg {...p}><circle cx="12" cy="12" r="1.5" fill="currentColor"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)"/></svg>;
+    case "check": return <svg {...p}><path d="M5 12l4 4 10-10"/></svg>;
     default: return null;
   }
 }
@@ -1091,6 +1093,24 @@ function Flashcard({ deck, onExit }) {
               {q.explanation ? (
                 <React.Fragment>
                   <h4><MedIcon name="lightbulb" size={11}/> 題解</h4><p>{q.explanation.summary}</p>
+                  {q.explanation.mechanism && <React.Fragment>
+                    <h4><MedIcon name="atom" size={11}/> 機轉</h4>
+                    <p>{q.explanation.mechanism}</p>
+                  </React.Fragment>}
+                  {q.explanation.options && <React.Fragment>
+                    <h4><MedIcon name="check" size={11}/> 逐選項分析</h4>
+                    <ul style={{ display: "grid", gap: 6 }}>
+                      {Object.entries(q.explanation.options).map(([k, v]) => (
+                        <li key={k}>
+                          <strong style={{ color: k === q.answer ? "var(--accent)" : "var(--ink-3)", fontFamily: "var(--font-mono)" }}>({k})</strong>　{v}
+                        </li>
+                      ))}
+                    </ul>
+                  </React.Fragment>}
+                  {q.explanation.guidelines && q.explanation.guidelines.length > 0 && <React.Fragment>
+                    <h4><MedIcon name="clipboard" size={11}/> 臨床指引</h4>
+                    <ul>{q.explanation.guidelines.map((g, i) => <li key={i}>{g}</li>)}</ul>
+                  </React.Fragment>}
                   {q.explanation.points && <React.Fragment>
                     <h4><MedIcon name="bookmark" size={11}/> 重點整理</h4>
                     <ul>{q.explanation.points.map((p, i) => <li key={i}>{p}</li>)}</ul>
