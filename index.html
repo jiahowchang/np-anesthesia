@@ -1286,22 +1286,253 @@ function ReviewToday({ onPickDeck }) {
   );
 }
 
-// ===== Syllabus =====
+// ===== Syllabus (NBCRNA Blueprint + Taiwan Curriculum + References) =====
+const NBCRNA_BLUEPRINT = [
+  {
+    code: "I", pct: 25, title: "基礎醫學", en: "Basic Sciences",
+    icon: "atom",
+    items: [
+      { h: "解剖、生理、病理生理", en: "Anatomy, physiology and pathophysiology" },
+      { h: "藥理學", en: "Pharmacology" },
+      { h: "應用化學、生化、物理", en: "Applied chemistry, biochemistry, physics" },
+    ],
+  },
+  {
+    code: "II", pct: 15, title: "儀器、設備、技術", en: "Equipment, Instrumentation, Technology",
+    icon: "device",
+    items: [
+      { h: "麻醉輸送系統", en: "Anesthetic delivery systems" },
+      { h: "呼吸道器材", en: "Airway equipment" },
+      { h: "監測設備", en: "Monitoring devices" },
+      { h: "影像", en: "Imaging" },
+    ],
+  },
+  {
+    code: "III", pct: 30, title: "基本麻醉原則", en: "General Principles of Anesthesia",
+    icon: "clipboard",
+    items: [
+      { h: "倫理考量", en: "Ethical considerations" },
+      { h: "法律議題", en: "Legal issues" },
+      { h: "安全與健康", en: "Safety and wellness" },
+      { h: "麻醉前評估與準備", en: "Preoperative assessment and preparation" },
+      { h: "體液評估與管理", en: "Fluid volume assessment and management" },
+      { h: "病人擺位", en: "Positioning" },
+      { h: "資料判讀與運用", en: "Utilization and interpretation of data" },
+      { h: "呼吸道處置", en: "Airway management" },
+      { h: "局部與區域麻醉", en: "Local / regional anesthetics" },
+      { h: "輕、中、深度鎮靜（MAC）", en: "Light, moderate and deep sedation" },
+      { h: "疼痛管理", en: "Pain management" },
+      { h: "疼痛理論（解剖、生理、病理、心理動力）", en: "Pain Theory" },
+      { h: "其他技術", en: "Other Techniques" },
+      { h: "麻醉後照護／呼吸治療", en: "Postanesthesia care / respiratory therapy" },
+    ],
+  },
+  {
+    code: "IV", pct: 30, title: "特定術式及病人之麻醉", en: "Anesthesia for Surgical Procedures & Special Populations",
+    icon: "lightbulb",
+    items: [
+      { h: "外科手術與診斷性麻醉，含併發症處置", en: "Surgical & diagnostic anesthesia, including management of complications" },
+      { h: "特殊族群之麻醉", en: "Anesthesia for special populations" },
+    ],
+  },
+];
+
+const TW_CURRICULUM = [
+  {
+    name: "核心課程．實體授課", hours: 53, color: "var(--accent)",
+    groups: [
+      { title: "專業基礎", hours: 5, items: ["麻醉護理的歷史與發展趨勢","進階麻醉護理師的角色與能力","專業倫理與專業團體","醫療法及護理人員法","醫學倫理"] },
+      { title: "系統生理與病理", hours: 14, items: ["心臟血管系統","呼吸系統","神經系統","腎臟、肝臟系統","產科與胎兒生理","肌肉骨骼、內分泌及免疫系統","老人生理","新生兒及小兒生理"] },
+      { title: "藥物學", hours: 6.5, items: ["藥效學及藥物動力學概論","吸入性麻醉藥","靜脈麻醉藥物","局部麻醉藥","鴉片類活化劑與拮抗劑","神經肌肉阻斷劑、膽鹼酯化酶抑制劑、抗膽鹼藥物"] },
+      { title: "臨床技能與實踐", hours: 23.5, items: ["神經學與心臟生理學","麻醉前評估","麻醉機原理與應用","麻醉標準及進階生理監測","輔助醫療行為與侵入性處置協助","全身麻醉照護","區域性麻醉照護（脊髓麻醉、硬脊膜外麻醉、神經阻斷）","常備衛藥材認識","病歷書寫與個資保護","麻醉後照護","感染管制與防護","針扎預防與處理"] },
+    ],
+  },
+  {
+    name: "核心課程．實作課程", hours: 12, color: "oklch(0.78 0.13 195)",
+    groups: [{ title: "模擬實作與評量", hours: 12, items: ["麻醉前準備（1h）","麻醉機模擬實作（2h）","生理監測模擬實作（2h）","全身麻醉照護模擬實作（2h）","區域麻醉照護模擬實作（2h）","感染控制與防護模擬實作（1h）","第一次筆試（2h）"] }],
+  },
+  {
+    name: "進階課程一．實體授課", hours: 34, color: "oklch(0.70 0.16 220)",
+    groups: [
+      { title: "設備與監測", hours: 6, items: ["經食道超音波與腦血氧飽和監視器","葉克膜(ECMO)、IABP、體外循環機","輸液加溫、體外溫度調節、血液回收設備"] },
+      { title: "基礎臨床", hours: 6, items: ["靜脈輸液與輸血治療","酸鹼平衡及血液氣體分析","呼吸器設定（含 EtCO₂ Capnography）"] },
+      { title: "手術專科麻醉護理照護", hours: 21, items: ["麻醉與手術擺位照護","心臟血管手術","胸腔手術","一般外科、婦科手術","腹腔鏡與機器手臂輔助手術","急性及慢性疼痛照護","門診手術","耳鼻喉與面顎手術","眼科、骨科手術","神經外科手術","產科手術","新生兒及小兒麻醉","中重度鎮靜麻醉"] },
+      { title: "其他主題與恢復期照護", hours: 3, items: ["酒精與藥物濫用","麻醉後恢復照護簡介","術後訪視簡介"] },
+    ],
+  },
+  {
+    name: "進階課程一．實作課程", hours: 38, color: "oklch(0.68 0.18 240)",
+    groups: [
+      { title: "監測設備操作", hours: 12, items: ["麻醉深度監視（BIS、EEG）","心輸出偵測（FloTrac、PiCCO、PA pressure、CCO）","體溫照護、快速輸液、血液回收","輸液幫浦（IVAC、TOP、Syringe pump）","血液氣體分析","呼吸裝置操作","神經肌肉阻斷監測"] },
+      { title: "緊急救援與設備", hours: 4, items: ["困難呼吸道設備","電擊器與急救設備（TCP / AED）"] },
+      { title: "監測與評估", hours: 4, items: ["生理監測器操作與初步判斷"] },
+      { title: "恢復期與病患照護", hours: 8, items: ["麻醉後恢復照護實作","術後訪視實作","護病溝通與麻醉衛教","麻醉合併症追蹤"] },
+      { title: "藥物與記錄", hours: 4, items: ["管制藥物管理","急性疼痛照護與止痛裝置","麻醉相關紀錄單填寫"] },
+      { title: "評量", hours: 6, items: ["第二次筆試（2h）","第一次技術考（2h）","其他相關實作（2h）"] },
+    ],
+  },
+  {
+    name: "進階課程二．實體授課", hours: 45, color: "oklch(0.66 0.19 260)",
+    groups: [
+      { title: "專業與管理", hours: 6, items: ["醫療糾紛預防與處理","調適工作壓力","情緒管理與人性關懷","品質指標監控原則","麻醉死亡暨併發症報告"] },
+      { title: "危機與併發症管理", hours: 18, items: ["惡性高熱","大量輸血與輸血反應","困難插管、支氣管痙攣、喉頭痙攣","重度藥物過敏及局部麻醉藥中毒","延遲甦醒及恢復室危急事件","休克及心肌梗塞","空氣栓塞、水中毒及肺水腫","高低血壓、區域麻醉及吸入性危機"] },
+      { title: "溝通與團隊", hours: 4, items: ["臨床溝通技巧","醫療團隊管理實施與應用"] },
+      { title: "特殊手術麻醉", hours: 3, items: ["減重手術","重大創傷手術","移植手術"] },
+      { title: "環境與安全", hours: 2, items: ["用電安全與災難應變"] },
+      { title: "實證醫學", hours: 12, items: ["實證文獻查證與搜尋","實證讀書報告撰寫","實證個案報告撰寫"] },
+    ],
+  },
+  {
+    name: "進階課程二．實作課程", hours: 31, color: "oklch(0.64 0.20 275)",
+    groups: [
+      { title: "發表與演講", hours: 12, items: ["讀書報告發表（6h）","案例分析發表（6h）"] },
+      { title: "臨床情境教案模擬", hours: 10, items: ["惡性高熱","困難插管","休克","局部麻醉藥物中毒","過度鎮靜處理","喉頭面照後嗆咳"] },
+      { title: "評量", hours: 11, items: ["第三次筆試（2h）","第二次技術考（實境模擬，5h）","其他相關實作（2h）"] },
+    ],
+  },
+];
+
+const REFERENCES = {
+  chinese: [
+    "新麻州總醫院麻醉手冊 第三版 2020（Pocket Anesthesia 3/e 2017）",
+    "MGH 臨床麻醉手冊 第九版 2019（Clinical Anesthesia Procedures of the MGH 9/e 2015）",
+    "Miller 大師引領您讀通麻醉學 — 麻醉學的基礎讀本 第六版 2014（Basics of Anesthesia 6/e 2011）",
+    "麻醉護理實用手冊 第三版（Nurse Anesthesia Pocket Guide 3/e 2016）",
+    "麻醉護理師袖珍指南 第二版 2013（Nurse Anesthesia Pocket Guide 2/e 2010）",
+    "麻醉護理手冊 第四版 2012（Handbook of Nurse Anesthesia 4/e 2010）",
+    "麻州總醫院麻醉手冊 第一版 2011（Pocket Anesthesia 1/e 2009）",
+    "臨床麻醉學（上／下）第二版 2010（Morgan and Mikhail's Clinical Anesthesiology 2/e 1996）",
+  ],
+  english: [
+    "Barash PG, Cullen BF, Stoelting RK, et al. Clinical Anesthesia. 8/e. Wolters Kluwer; 2017.",
+    "Chestnut DH, Wong CA, Tsen LC, et al. Chestnut's Obstetric Anesthesia. 6/e. Elsevier; 2020.",
+    "Coté CJ, Lerman J, Anderson BJ. Coté and Lerman's A Practice of Anesthesia for Infants and Children. 6/e. Elsevier; 2018.",
+    "Davis PJ, Cladis FP. Smith's Anesthesia for Infants and Children. 9/e. Elsevier; 2016.",
+    "Dorsch JA, Dorsch SE. Understanding Anesthesia Equipment. 5/e. Lippincott Williams & Wilkins; 2007.",
+    "Ehrenwerth J, Eisenkraft J, Berry J. Anesthesia Equipment: Principles and Applications. 2/e. Mosby; 2013.",
+    "Farag E, Mounir-Soliman L. Brown's Atlas of Regional Anesthesia. 5/e. Elsevier; 2016.",
+    "Flood P, Rathmell JP, Shafer S. Stoelting's Pharmacology & Physiology in Anesthetic Practice. 5/e. Lippincott Williams & Wilkins; 2014.",
+    "Foster SD, Callahan MF. A Professional Study and Resource Guide for the CRNA. 2/e. AANA; 2011.",
+    "Hagberg C, Artime C, Aziz M. Hagberg and Benumof's Airway Management. 4/e. Elsevier; 2018.",
+    "Hall JE. Guyton and Hall Textbook of Medical Physiology. 13/e. Saunders; 2015.",
+    "Hines RL, Marschall KE. Stoelting's Anesthesia and Co-existing Disease. 7/e. Elsevier; 2018.",
+    "Miller RD, Cohen NH, Eriksson LI, et al. Miller's Anesthesia (Vols. 1-2). 8/e. Saunders; 2014.",
+    "Nagelhout JJ, Elisha S. Nurse Anesthesia. 6/e. Elsevier; 2018.",
+  ],
+};
+
 function Syllabus() {
-  const topics = {
-    anesth_general:  ["專科護理師角色","麻醉相關法規","醫病溝通","實證與品質","教學與研究","麻醉護理倫理"],
-    anesth_advanced: ["麻醉前評估","全身麻醉","區域麻醉","監測麻醉照護(MAC)","麻醉併發症","疼痛管理","麻醉藥理","術後恢復"],
-  };
+  const totalHours = TW_CURRICULUM.reduce((a, c) => a + c.hours, 0);
   return (
     <div className="fade-in">
-      <div className="page-head"><div><h1 className="page-title">命題大綱</h1><p className="page-sub">依據衛生福利部公告之專科護理師甄審筆試命題範圍整理</p></div></div>
-      <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
-        {window.SPECIALTIES.map(s => (
-          <div key={s.id} className={"card " + s.className} style={{ padding: 22 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}><div className="spec-icon-tile"><SpecIcon id={s.id} size={22}/></div><div style={{ fontWeight: 700, fontSize: 16 }}>{s.name}</div></div>
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 6 }}>{topics[s.id].map(t => <li key={t} style={{ fontSize: 13.5, color: "var(--ink-2)", display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 4, height: 4, borderRadius: 99, background: "var(--spec)" }}></span>{t}</li>)}</ul>
+      <div className="page-head"><div><h1 className="page-title">命題大綱與訓練課綱</h1><p className="page-sub">NBCRNA Blueprint · 台灣麻醉專師訓練課綱（共 {totalHours} 小時）· 參考書目</p></div></div>
+
+      {/* Section A: NBCRNA Blueprint */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>專師甄審筆試命題範圍</h2>
+          <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>NBCRNA BLUEPRINT</span>
+        </div>
+        <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
+          {NBCRNA_BLUEPRINT.map(s => (
+            <div key={s.code} className={"card spec-anesth"} style={{ padding: 22 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: "color-mix(in oklch, var(--accent) 18%, transparent)", color: "var(--accent)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-mono)", letterSpacing: "-0.02em" }}>{s.code}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>{s.title}</div>
+                  <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 2, fontFamily: "var(--font-mono)" }}>{s.en}</div>
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "var(--accent)", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-mono)" }}>{s.pct}<span style={{ fontSize: 12 }}>%</span></div>
+              </div>
+              <div style={{ height: 4, borderRadius: 2, background: "var(--surface-alt)", overflow: "hidden", marginBottom: 14 }}>
+                <div style={{ width: (s.pct * 3.3) + "%", height: "100%", background: "linear-gradient(90deg, var(--accent), color-mix(in oklch, var(--accent) 60%, white))" }}></div>
+              </div>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+                {s.items.map(it => (
+                  <li key={it.h} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    <span style={{ width: 4, height: 4, borderRadius: 99, background: "var(--accent)", flexShrink: 0, marginTop: 7 }}></span>
+                    <div style={{ flex: 1 }}>
+                      <div>{it.h}</div>
+                      <div style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--font-mono)", marginTop: 1 }}>{it.en}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Section B: Taiwan Curriculum */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>台灣麻醉專科護理教育訓練課綱</h2>
+          <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>TW CURRICULUM · {totalHours}H</span>
+        </div>
+        <div style={{ fontSize: 12.5, color: "var(--ink-3)", marginBottom: 16 }}>
+          資料來源：<a href="https://crna.tw/www/programs/blueprint" target="_blank" rel="noopener" style={{ color: "var(--accent)", textDecoration: "none" }}>crna.tw — 台灣麻醉專師教育訓練</a>
+        </div>
+        <div style={{ display: "grid", gap: 14 }}>
+          {TW_CURRICULUM.map(block => (
+            <div key={block.name} className="card" style={{ padding: 22 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16, paddingBottom: 14, borderBottom: "1px solid var(--surface-alt)" }}>
+                <div style={{ width: 36, height: 36, borderRadius: 9, background: "color-mix(in oklch, " + block.color + " 18%, transparent)", color: block.color, display: "grid", placeItems: "center" }}>
+                  <MedIcon name="clipboard" size={18}/>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>{block.name}</div>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: block.color, fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-mono)" }}>{block.hours} 小時</div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+                {block.groups.map(g => (
+                  <div key={g.title}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ink-1)", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>{g.title}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: "var(--ink-3)", fontFamily: "var(--font-mono)" }}>· {g.hours}h</span>
+                    </div>
+                    <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 4 }}>
+                      {g.items.map(it => (
+                        <li key={it} style={{ fontSize: 12.5, color: "var(--ink-2)", display: "flex", gap: 6, alignItems: "flex-start", lineHeight: 1.55 }}>
+                          <span style={{ color: "var(--ink-3)", flexShrink: 0 }}>›</span>
+                          <span>{it}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Section C: References */}
+      <div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>參考書目</h2>
+          <span style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>RECOMMENDED READINGS</span>
+        </div>
+        <div className="card-grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="card" style={{ padding: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <MedIcon name="book-open" size={18}/>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>中文版建議參考書</div>
+            </div>
+            <ol style={{ margin: 0, paddingLeft: 22, display: "grid", gap: 8 }}>
+              {REFERENCES.chinese.map((b, i) => <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.6 }}>{b}</li>)}
+            </ol>
           </div>
-        ))}
+          <div className="card" style={{ padding: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <MedIcon name="book-open" size={18}/>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>原文參考書（NBCRNA）</div>
+            </div>
+            <ol style={{ margin: 0, paddingLeft: 22, display: "grid", gap: 8 }}>
+              {REFERENCES.english.map((b, i) => <li key={i} style={{ fontSize: 12, color: "var(--ink-2)", lineHeight: 1.55, fontFamily: "var(--font-sans)" }}>{b}</li>)}
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
   );
