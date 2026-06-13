@@ -2178,7 +2178,7 @@ function App() {
   else if (page === "about") content = <About />;
   else if (page === "admin" && user.isAdmin) content = <AdminPanel />;
   const initials = (user.name || "U").trim().slice(0, 2).toUpperCase();
-  const roleLabel = user.role === "certified" ? "已甄審 NP" : user.role === "other" ? "訪客 / 其他" : "訓練中 NP";
+  const roleLabel = user.isAdmin ? "管理員" : user.role === "certified" ? "已甄審 NP" : user.role === "other" ? "其他" : "訓練中 NP";
   return (
     <div className="app">
       <Sidebar currentPage={page} onNav={(p) => { setActiveDeck(null); setPage(p); }} decks={allDecks} isAdmin={user.isAdmin} />
