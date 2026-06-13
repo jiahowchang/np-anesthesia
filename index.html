@@ -799,7 +799,7 @@ window.AuthAPI = {
   completeProfile: async ({ name, role, experience, hospital }) => {
     const user = auth.currentUser;
     if (!user) throw new Error("尚未登入 Google 帳號");
-    const profile = {
+    const profileToSave = {
       uid: user.uid,
       email: user.email,
       name: name || user.displayName || "",
@@ -811,8 +811,23 @@ window.AuthAPI = {
       createdAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
     };
-    await setDoc(doc(db, USERS_COL, user.uid), profile);
-    return profile;
+    try {
+      await setDoc(doc(db, USERS_COL, user.uid), profileToSave);
+    } catch (e) {
+      console.error("completeProfile setDoc failed:", e);
+      throw new Error("儲存失敗：" + (e.code || e.message || "未知錯誤"));
+    }
+    // Re-read to get server timestamps, then update cached profile + notify listeners
+    try {
+      const snap = await getDoc(doc(db, USERS_COL, user.uid));
+      const data = snap.exists() ? snap.data() : profileToSave;
+      cachedProfile = { uid: user.uid, ...data, isAdmin: user.email === window.ADMIN_EMAIL, needsProfile: false };
+    } catch (e) {
+      // Fallback if re-read fails: use local data with now() instead of serverTimestamp
+      cachedProfile = { uid: user.uid, ...profileToSave, createdAt: null, lastLoginAt: null, isAdmin: user.email === window.ADMIN_EMAIL, needsProfile: false };
+    }
+    authListeners.forEach(fn => fn(cachedProfile));
+    return cachedProfile;
   },
   logout: async () => { await signOut(auth); },
 };
