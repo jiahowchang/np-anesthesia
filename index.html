@@ -302,6 +302,31 @@ body::before {
 }
 .flash-answer-text { font-size: 17px; color: var(--ink); font-weight: 500; }
 .flash-answer-label { font-size: 12px; color: var(--ink-3); letter-spacing: 0.12em; font-weight: 700; font-family: var(--font-mono); }
+.oe-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-radius: 9px;
+  background: linear-gradient(135deg, oklch(0.30 0.10 280) 0%, oklch(0.26 0.10 260) 100%);
+  color: oklch(0.85 0.10 280); border: 1px solid color-mix(in oklch, oklch(0.65 0.18 280) 40%, transparent);
+  font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  white-space: nowrap; transition: all 0.18s;
+  box-shadow: 0 0 16px color-mix(in oklch, oklch(0.55 0.20 280) 20%, transparent), inset 0 1px 0 rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.oe-btn:hover { filter: brightness(1.18); box-shadow: 0 0 24px color-mix(in oklch, oklch(0.55 0.20 280) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.08); }
+.oe-btn:active { transform: translateY(1px); }
+.oe-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: oklch(0.20 0.05 195); color: var(--ink);
+  border: 1px solid color-mix(in oklch, var(--accent) 50%, transparent);
+  padding: 12px 20px; border-radius: 10px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13.5px; letter-spacing: 0.01em;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.45), 0 0 24px var(--accent-glow);
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+.oe-toast svg { color: var(--accent); flex-shrink: 0; }
+.oe-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .flash-explain { font-size: 15.5px; line-height: 1.8; color: var(--ink-2); overflow-y: auto; flex: 1; padding-right: 8px; }
 .flash-explain h4 { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin: 18px 0 8px; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); }
 .flash-explain h4:first-child { margin-top: 0; }
@@ -1128,7 +1153,36 @@ function Flashcard({ deck, onExit }) {
             </div>
             <div className="flash-answer-row">
               <div className="flash-answer-key">{q.answer}</div>
-              <div><div className="flash-answer-label">正確答案</div><div className="flash-answer-text">{q.answerText}</div></div>
+              <div style={{ flex: 1 }}><div className="flash-answer-label">正確答案</div><div className="flash-answer-text">{q.answerText}</div></div>
+              <button className="oe-btn" onClick={() => {
+                const text = q.stem + "\n\n" + q.options.map(o => "(" + o.key + ") " + o.text).join("\n") + "\n\n以上題目正確答案為何？請依據臨床證據說明。";
+                const fallback = () => {
+                  const ta = document.createElement("textarea");
+                  ta.value = text;
+                  ta.style.position = "fixed";
+                  ta.style.opacity = "0";
+                  document.body.appendChild(ta);
+                  ta.select();
+                  try { document.execCommand("copy"); } catch(e) {}
+                  document.body.removeChild(ta);
+                };
+                const opened = window.open("https://www.openevidence.com/", "_blank", "noopener,noreferrer");
+                if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(text).catch(fallback);
+                } else {
+                  fallback();
+                }
+                // Show toast
+                const t = document.createElement("div");
+                t.className = "oe-toast";
+                t.innerHTML = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg> 題目已複製到剪貼簿，請在 OpenEvidence 貼上 (Ctrl+V / ⌘V)";
+                document.body.appendChild(t);
+                setTimeout(() => t.classList.add("show"), 10);
+                setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 4500);
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>
+                用 OpenEvidence 查證
+              </button>
             </div>
             <div className="flash-explain">
               {q.explanation ? (
