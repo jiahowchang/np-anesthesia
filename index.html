@@ -201,6 +201,20 @@ body::before {
 .chip:hover { background: var(--surface-alt); color: var(--ink); }
 .chip.active { background: var(--accent); color: var(--bg); box-shadow: 0 0 12px var(--accent-glow); }
 
+/* Admin */
+.admin-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.admin-table thead th { text-align: left; padding: 14px 16px; font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-family: var(--font-mono); }
+.admin-table tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.admin-table tbody tr:hover { background: color-mix(in oklch, var(--accent) 4%, transparent); }
+.admin-table tbody tr:last-child td { border-bottom: none; }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; }
+.status-active { background: color-mix(in oklch, oklch(0.65 0.18 150) 18%, transparent); color: oklch(0.78 0.18 150); border: 1px solid color-mix(in oklch, oklch(0.65 0.18 150) 30%, transparent); }
+.status-disabled { background: color-mix(in oklch, oklch(0.60 0.20 25) 18%, transparent); color: oklch(0.75 0.20 25); border: 1px solid color-mix(in oklch, oklch(0.60 0.20 25) 30%, transparent); }
+.admin-action { padding: 6px 12px; border-radius: 7px; background: var(--surface-alt); color: var(--ink-2); border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.admin-action:hover { background: color-mix(in oklch, var(--accent) 12%, var(--surface-alt)); color: var(--ink); }
+.admin-action.danger { color: oklch(0.75 0.20 25); border-color: color-mix(in oklch, oklch(0.60 0.20 25) 30%, transparent); }
+.admin-action.danger:hover { background: color-mix(in oklch, oklch(0.60 0.20 25) 18%, transparent); }
+
 /* Specialty colors */
 .spec-internal { --spec: var(--blue); --spec-soft: var(--blue-soft); }
 .spec-psych { --spec: var(--violet); --spec-soft: var(--violet-soft); }
@@ -678,34 +692,112 @@ window.PASS_STATS = {
   ],
 };
 
-// Auth
-var USERS_KEY = "np_users";
-var SESSION_KEY = "np_session";
-function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY) || "{}"); } catch(e) { return {}; } }
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
-function hashPwd(s) { var h = 0; for (var i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0; return "h" + Math.abs(h).toString(36); }
+// Clear legacy localStorage auth (migrated to Firebase)
+try { localStorage.removeItem("np_users"); localStorage.removeItem("np_session"); } catch(e) {}
+window.ADMIN_EMAIL = "jiahowchang@gmail.com";
+  </script>
+
+  <!-- Firebase Auth + Firestore -->
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBrs80vpFVe-iEh5ctzRWfYHUBb3KGvILo",
+  authDomain: "speech-to-text-2f776.firebaseapp.com",
+  projectId: "speech-to-text-2f776",
+  storageBucket: "speech-to-text-2f776.firebasestorage.app",
+  messagingSenderId: "283739023798",
+  appId: "1:283739023798:web:3091ec2bcf6262b5ecb917"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const USERS_COL = "np_anesthesia_users";
+
+// Cached profile of current user (set by onAuthStateChanged)
+let cachedProfile = null;
+const authListeners = new Set();
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    cachedProfile = null;
+    authListeners.forEach(fn => fn(null));
+    return;
+  }
+  try {
+    const snap = await getDoc(doc(db, USERS_COL, user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.status === "disabled") {
+        await signOut(auth);
+        cachedProfile = null;
+        alert("您的帳號已被管理員停用。如有疑問請聯絡 " + window.ADMIN_EMAIL);
+        authListeners.forEach(fn => fn(null));
+        return;
+      }
+      cachedProfile = { uid: user.uid, ...data, isAdmin: user.email === window.ADMIN_EMAIL };
+    } else {
+      cachedProfile = { uid: user.uid, email: user.email, name: user.email, role: "trainee", status: "active", isAdmin: user.email === window.ADMIN_EMAIL };
+    }
+    authListeners.forEach(fn => fn(cachedProfile));
+  } catch (e) {
+    console.error("Profile load failed", e);
+    cachedProfile = null;
+    authListeners.forEach(fn => fn(null));
+  }
+});
+
 window.AuthAPI = {
-  current: function() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch(e) { return null; } },
-  register: function(o) {
-    var users = getUsers();
-    if (users[o.email]) throw new Error("此 Email 已註冊");
-    if (o.password.length < 6) throw new Error("密碼至少 6 個字元");
-    users[o.email] = { name: o.name, email: o.email, role: o.role, experience: o.experience||"", hospital: o.hospital||"", examGroup: o.examGroup||"", pwd: hashPwd(o.password), createdAt: new Date().toISOString() };
-    saveUsers(users);
-    var session = { name: o.name, email: o.email, role: o.role, experience: o.experience, hospital: o.hospital, examGroup: o.examGroup };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    return session;
+  current: () => cachedProfile,
+  subscribe: (fn) => { authListeners.add(fn); return () => authListeners.delete(fn); },
+  register: async ({ name, email, password, role, experience, hospital }) => {
+    if (password.length < 6) throw new Error("密碼至少 6 個字元");
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const profile = {
+      uid: cred.user.uid,
+      name, email, role: role || "trainee",
+      experience: experience || "",
+      hospital: hospital || "",
+      status: "active",
+      createdAt: serverTimestamp(),
+      lastLoginAt: serverTimestamp(),
+    };
+    await setDoc(doc(db, USERS_COL, cred.user.uid), profile);
+    return profile;
   },
-  login: function(o) {
-    var users = getUsers();
-    var u = users[o.email];
-    if (!u) throw new Error("此 Email 尚未註冊");
-    if (u.pwd !== hashPwd(o.password)) throw new Error("密碼錯誤");
-    var session = { name: u.name, email: u.email, role: u.role, experience: u.experience, hospital: u.hospital, examGroup: u.examGroup };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    return session;
+  login: async ({ email, password }) => {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const snap = await getDoc(doc(db, USERS_COL, cred.user.uid));
+    if (!snap.exists()) throw new Error("使用者資料不存在，請聯絡管理員");
+    const data = snap.data();
+    if (data.status === "disabled") {
+      await signOut(auth);
+      throw new Error("帳號已被停用，請聯絡 " + window.ADMIN_EMAIL);
+    }
+    try { await updateDoc(doc(db, USERS_COL, cred.user.uid), { lastLoginAt: serverTimestamp() }); } catch(e) {}
+    return { uid: cred.user.uid, ...data, isAdmin: cred.user.email === window.ADMIN_EMAIL };
   },
-  logout: function() { localStorage.removeItem(SESSION_KEY); },
+  logout: async () => { await signOut(auth); },
+};
+
+// Admin API
+window.AdminAPI = {
+  subscribeUsers: (callback) => {
+    const q = query(collection(db, USERS_COL), orderBy("createdAt", "desc"));
+    return onSnapshot(q, (snap) => {
+      const users = [];
+      snap.forEach(d => users.push({ uid: d.id, ...d.data() }));
+      callback(users);
+    }, (err) => { console.error("subscribeUsers error", err); callback([]); });
+  },
+  setStatus: async (uid, status) => {
+    await updateDoc(doc(db, USERS_COL, uid), { status, statusUpdatedAt: serverTimestamp() });
+  },
+  deleteProfile: async (uid) => {
+    await deleteDoc(doc(db, USERS_COL, uid));
+  },
 };
   </script>
 
@@ -782,7 +874,7 @@ function NavIcon({ name }) {
 }
 
 // ===== Sidebar =====
-function Sidebar({ currentPage, onNav, decks }) {
+function Sidebar({ currentPage, onNav, decks, isAdmin }) {
   const totalCards = window.QUESTIONS.length;
   const practiceCount = (window.PRACTICE_QUESTIONS || []).length;
   const items = [
@@ -796,6 +888,7 @@ function Sidebar({ currentPage, onNav, decks }) {
     { id: "syllabus", label: "命題大綱", icon: "book" },
     { id: "about", label: "關於本站", icon: "info" },
   ];
+  if (isAdmin) refs.push({ id: "admin", label: "使用者管理", icon: "shield" });
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -851,10 +944,22 @@ function AuthScreen({ onLogin }) {
     }
     setLoading(true);
     try {
-      await new Promise(r => setTimeout(r, 300));
-      const session = mode === "login" ? window.AuthAPI.login({ email: form.email, password: form.password }) : window.AuthAPI.register(form);
+      const session = mode === "login"
+        ? await window.AuthAPI.login({ email: form.email, password: form.password })
+        : await window.AuthAPI.register(form);
       onLogin(session);
-    } catch (ex) { setErr(ex.message); } finally { setLoading(false); }
+    } catch (ex) {
+      // Convert Firebase errors to friendly Chinese messages
+      const code = ex.code || "";
+      let msg = ex.message || "未知錯誤";
+      if (code === "auth/email-already-in-use") msg = "此 Email 已註冊";
+      else if (code === "auth/invalid-email") msg = "Email 格式錯誤";
+      else if (code === "auth/weak-password") msg = "密碼至少 6 個字元";
+      else if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") msg = "Email 或密碼錯誤";
+      else if (code === "auth/too-many-requests") msg = "登入嘗試次數過多，請稍後再試";
+      else if (code === "auth/network-request-failed") msg = "網路錯誤，請檢查連線";
+      setErr(msg);
+    } finally { setLoading(false); }
   };
   return (
     <div className="auth-stage">
@@ -1797,17 +1902,175 @@ function PracticeBank({ onPickDeck }) {
   );
 }
 
+// ===== Admin Panel (only visible to ADMIN_EMAIL) =====
+function AdminPanel() {
+  const [users, setUsers] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [filter, setFilter] = useState("all"); // all | active | disabled
+  const [query, setQuery] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  useEffect(() => {
+    const unsub = window.AdminAPI.subscribeUsers((list) => { setUsers(list); setLoaded(true); });
+    return () => { if (typeof unsub === "function") unsub(); };
+  }, []);
+  const stats = useMemo(() => ({
+    total: users.length,
+    active: users.filter(u => u.status === "active").length,
+    disabled: users.filter(u => u.status === "disabled").length,
+  }), [users]);
+  const filtered = users.filter(u => {
+    if (filter !== "all" && u.status !== filter) return false;
+    if (query) {
+      const q = query.toLowerCase();
+      if (!(u.name||"").toLowerCase().includes(q)
+       && !(u.email||"").toLowerCase().includes(q)
+       && !(u.hospital||"").toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+  const fmtDate = (ts) => {
+    if (!ts) return "—";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.getFullYear() + "/" + String(d.getMonth()+1).padStart(2,'0') + "/" + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0');
+  };
+  const toggleStatus = async (u) => {
+    const newStatus = u.status === "active" ? "disabled" : "active";
+    try { await window.AdminAPI.setStatus(u.uid, newStatus); }
+    catch (e) { alert("更新失敗：" + e.message); }
+  };
+  const handleDelete = async (u) => {
+    try { await window.AdminAPI.deleteProfile(u.uid); setConfirmDelete(null); }
+    catch (e) { alert("刪除失敗：" + e.message); }
+  };
+  return (
+    <div className="fade-in">
+      <div className="page-head">
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: "color-mix(in oklch, oklch(0.60 0.20 25) 18%, transparent)", color: "oklch(0.75 0.20 25)", display: "grid", placeItems: "center" }}>
+              <MedIcon name="shield" size={18}/>
+            </div>
+            <h1 className="page-title" style={{ margin: 0 }}>使用者管理</h1>
+          </div>
+          <p className="page-sub">管理員專屬頁面 · 註冊使用者清單 · {stats.total} 人（啟用 {stats.active}、停用 {stats.disabled}）</p>
+        </div>
+      </div>
+      <div className="kpi-row" style={{ marginBottom: 16 }}>
+        <div className="kpi-card"><div className="kpi-label">總註冊人數</div><div className="kpi-value">{stats.total}<span className="kpi-unit">人</span></div></div>
+        <div className="kpi-card"><div className="kpi-label">啟用中</div><div className="kpi-value" style={{ color: "oklch(0.78 0.18 150)" }}>{stats.active}<span className="kpi-unit">人</span></div></div>
+        <div className="kpi-card"><div className="kpi-label">已停用</div><div className="kpi-value" style={{ color: "oklch(0.75 0.20 25)" }}>{stats.disabled}<span className="kpi-unit">人</span></div></div>
+        <div className="kpi-card"><div className="kpi-label">啟用率</div><div className="kpi-value">{stats.total ? Math.round(stats.active/stats.total*100) : 0}<span className="kpi-unit">%</span></div></div>
+      </div>
+      <input className="search-input" placeholder="搜尋姓名 / Email / 醫院" value={query} onChange={e => setQuery(e.target.value)} style={{ marginBottom: 12 }} />
+      <div className="filters" style={{ marginBottom: 16 }}>
+        <div className="filter-group">
+          <span className="filter-label">狀態</span>
+          <div className="filter-chips">
+            <button className={"chip " + (filter === "all" ? "active" : "")} onClick={() => setFilter("all")}>全部 ({stats.total})</button>
+            <button className={"chip " + (filter === "active" ? "active" : "")} onClick={() => setFilter("active")}>啟用中 ({stats.active})</button>
+            <button className={"chip " + (filter === "disabled" ? "active" : "")} onClick={() => setFilter("disabled")}>已停用 ({stats.disabled})</button>
+          </div>
+        </div>
+      </div>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        {!loaded ? (
+          <div style={{ padding: 40, textAlign: "center", color: "var(--ink-3)" }}>載入中…</div>
+        ) : filtered.length === 0 ? (
+          <div style={{ padding: 40, textAlign: "center", color: "var(--ink-3)" }}>沒有符合條件的使用者</div>
+        ) : (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>使用者</th>
+                <th>身分</th>
+                <th>單位</th>
+                <th>註冊時間</th>
+                <th>最後登入</th>
+                <th>狀態</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(u => (
+                <tr key={u.uid}>
+                  <td>
+                    <div style={{ fontWeight: 600, color: "var(--ink-1)" }}>{u.name || "—"}</div>
+                    <div style={{ fontSize: 12, color: "var(--ink-3)", fontFamily: "var(--font-mono)" }}>{u.email}</div>
+                  </td>
+                  <td><span style={{ fontSize: 12, color: "var(--ink-2)" }}>{u.role === "certified" ? "已甄審 NP" : u.role === "other" ? "其他" : "訓練中 NP"}</span><div style={{ fontSize: 11, color: "var(--ink-3)" }}>{u.experience || "—"} 年資</div></td>
+                  <td><span style={{ fontSize: 13, color: "var(--ink-2)" }}>{u.hospital || "—"}</span></td>
+                  <td><span style={{ fontSize: 12, color: "var(--ink-3)", fontFamily: "var(--font-mono)" }}>{fmtDate(u.createdAt)}</span></td>
+                  <td><span style={{ fontSize: 12, color: "var(--ink-3)", fontFamily: "var(--font-mono)" }}>{fmtDate(u.lastLoginAt)}</span></td>
+                  <td>
+                    {u.status === "active"
+                      ? <span className="status-badge status-active">● 啟用中</span>
+                      : <span className="status-badge status-disabled">● 已停用</span>}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="admin-action" onClick={() => toggleStatus(u)} title={u.status === "active" ? "停用此帳號" : "重新啟用"}>
+                        {u.status === "active" ? "停用" : "啟用"}
+                      </button>
+                      <button className="admin-action danger" onClick={() => setConfirmDelete(u)} title="刪除帳號資料">刪除</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 14, lineHeight: 1.7 }}>
+        ※ 「停用」只是阻止登入；資料仍保留。<br/>
+        ※ 「刪除」僅刪除 Firestore 使用者資料，Firebase Authentication 中的帳號需到 Firebase Console 刪除。<br/>
+        ※ 您（{window.ADMIN_EMAIL}）為唯一管理員。
+      </p>
+      {confirmDelete && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "grid", placeItems: "center", zIndex: 9999 }} onClick={() => setConfirmDelete(null)}>
+          <div className="card" style={{ padding: 24, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ margin: "0 0 12px", fontSize: 17 }}>確認刪除使用者資料？</h3>
+            <p style={{ color: "var(--ink-2)", fontSize: 14, lineHeight: 1.7 }}>將刪除 <strong>{confirmDelete.name}</strong>（{confirmDelete.email}）的 Firestore 資料。<br/>此操作不可復原，且該使用者下次登入時會被視為「使用者資料不存在」。</p>
+            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
+              <button className="admin-action" onClick={() => setConfirmDelete(null)} style={{ flex: 1 }}>取消</button>
+              <button className="admin-action danger" onClick={() => handleDelete(confirmDelete)} style={{ flex: 1 }}>確認刪除</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ===== Main App =====
 function App() {
   const [page, setPage] = useState("home");
   const [activeDeck, setActiveDeck] = useState(null);
   const [user, setUser] = useState(() => window.AuthAPI.current());
+  const [authReady, setAuthReady] = useState(() => window.AuthAPI.current() !== null);
   const [menuOpen, setMenuOpen] = useState(false);
   const allDecks = useMemo(() => { const map = new Map(); for (const q of window.QUESTIONS) { const key = q.year + "::" + q.specialty; if (!map.has(key)) map.set(key, true); } return map.size; }, []);
   const handlePickDeck = (deck) => setActiveDeck(deck);
   const handleExitDeck = () => setActiveDeck(null);
-  const handleLogout = () => { window.AuthAPI.logout(); setUser(null); setMenuOpen(false); setActiveDeck(null); setPage("home"); };
+  const handleLogout = async () => { try { await window.AuthAPI.logout(); } catch(e) {} setMenuOpen(false); setActiveDeck(null); setPage("home"); };
+  useEffect(() => {
+    // Subscribe to Firebase auth state changes
+    const unsub = window.AuthAPI.subscribe((profile) => {
+      setUser(profile);
+      setAuthReady(true);
+    });
+    // Give Firebase a chance to restore session, then mark ready
+    const timer = setTimeout(() => setAuthReady(true), 1500);
+    return () => { unsub(); clearTimeout(timer); };
+  }, []);
   useEffect(() => { if (!menuOpen) return; const onClick = (e) => { if (!e.target.closest(".user-menu")) setMenuOpen(false); }; document.addEventListener("click", onClick); return () => document.removeEventListener("click", onClick); }, [menuOpen]);
+  if (!authReady) return (
+    <div style={{position:"fixed",inset:0,display:"grid",placeItems:"center",background:"var(--bg)",color:"var(--ink-1)"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:48,height:48,border:"3px solid var(--surface-alt)",borderTopColor:"var(--accent)",borderRadius:"50%",margin:"0 auto 16px",animation:"spin 0.8s linear infinite"}}></div>
+        <div style={{fontSize:14,color:"var(--ink-2)",letterSpacing:"0.06em"}}>檢查登入狀態…</div>
+      </div>
+    </div>
+  );
   if (!user) return <AuthScreen onLogin={setUser} />;
   let content;
   if (activeDeck) content = <Flashcard deck={activeDeck} onExit={handleExitDeck} />;
@@ -1818,16 +2081,17 @@ function App() {
   else if (page === "dashboard") content = <Dashboard />;
   else if (page === "syllabus") content = <Syllabus />;
   else if (page === "about") content = <About />;
+  else if (page === "admin" && user.isAdmin) content = <AdminPanel />;
   const initials = (user.name || "U").trim().slice(0, 2).toUpperCase();
   const roleLabel = user.role === "certified" ? "已甄審 NP" : user.role === "other" ? "訪客 / 其他" : "訓練中 NP";
   return (
     <div className="app">
-      <Sidebar currentPage={page} onNav={(p) => { setActiveDeck(null); setPage(p); }} decks={allDecks} />
+      <Sidebar currentPage={page} onNav={(p) => { setActiveDeck(null); setPage(p); }} decks={allDecks} isAdmin={user.isAdmin} />
       <header className="topbar">
         <div className="topbar-left">
           <MedIcon name="pulse" size={16}/><span style={{ color: "var(--ink-3)" }}>Anesthesia NP Prep Platform</span>
           <span style={{ width: 1, height: 14, background: "var(--border)" }}></span>
-          <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>{activeDeck ? "閃卡複習" : page === "home" ? "總覽" : page === "decks" ? "考古題卡組" : page === "practice" ? "參考書練習題" : page === "review" ? "今日複習" : page === "dashboard" ? "甄審通過率儀表板" : page === "syllabus" ? "命題大綱" : "關於本站"}</span>
+          <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>{activeDeck ? "閃卡複習" : page === "home" ? "總覽" : page === "decks" ? "考古題卡組" : page === "practice" ? "參考書練習題" : page === "review" ? "今日複習" : page === "dashboard" ? "甄審通過率儀表板" : page === "syllabus" ? "命題大綱" : page === "admin" ? "使用者管理" : "關於本站"}</span>
         </div>
         <div className="topbar-right">
           <div className="topbar-time"><MedIcon name="calendar" size={13}/><span>114 年度</span></div>
