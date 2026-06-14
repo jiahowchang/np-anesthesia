@@ -731,7 +731,7 @@ window.ADMIN_EMAIL = "jiahowchang@gmail.com";
   <!-- Firebase Auth + Firestore -->
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -810,6 +810,17 @@ window.AuthAPI = {
         throw e;
       }
     }
+  },
+  // Email/password fallback — works inside in-app browsers (LINE/FB/IG) where Google OAuth is blocked
+  registerWithEmail: async (email, password) => {
+    await createUserWithEmailAndPassword(auth, email.trim(), password);
+    // onAuthStateChanged fires → no Firestore profile yet → needsProfile → ProfileCompletion
+  },
+  signInWithEmail: async (email, password) => {
+    await signInWithEmailAndPassword(auth, email.trim(), password);
+  },
+  resetPassword: async (email) => {
+    await sendPasswordResetEmail(auth, email.trim());
   },
   completeProfile: async ({ name, role, experience, hospital }) => {
     const user = auth.currentUser;
@@ -1030,11 +1041,23 @@ function Sidebar({ currentPage, onNav, decks, isAdmin }) {
 }
 
 // ===== Auth Screen (Google Sign-In) =====
+// Detect in-app browsers (LINE/FB/IG/Messenger/WeChat) where Google OAuth returns disallowed_useragent
+function isInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  return /FBAN|FBAV|FB_IAB|Instagram|\bLine\/|MicroMessenger|Messenger|KAKAOTALK|\bGSA\b|; wv\)/i.test(ua);
+}
+
 function AuthScreen() {
   const [err, setErr] = useState("");
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState("login"); // login | register
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [copied, setCopied] = useState(false);
+  const inApp = isInAppBrowser();
   const handleGoogle = async () => {
-    setErr(""); setLoading(true);
+    setErr(""); setNotice(""); setLoading(true);
     try {
       await window.AuthAPI.signInWithGoogle();
     } catch (ex) {
@@ -1044,8 +1067,50 @@ function AuthScreen() {
       else if (code === "auth/cancelled-popup-request") msg = "已取消登入";
       else if (code === "auth/network-request-failed") msg = "網路錯誤，請檢查連線";
       else if (code === "auth/unauthorized-domain") msg = "此網域未授權使用此登入方式，請聯絡管理員 jiahowchang@gmail.com";
+      else if (code === "auth/operation-not-supported-in-this-environment" || code === "auth/web-storage-unsupported") msg = "此瀏覽器不支援 Google 登入，請改用下方 Email 登入，或用 Safari／Chrome 開啟本站。";
       setErr(msg);
       setLoading(false);
+    }
+  };
+  const handleEmail = async (e) => {
+    e.preventDefault(); setErr(""); setNotice("");
+    if (!email.trim()) return setErr("請輸入 Email");
+    if (pw.length < 6) return setErr("密碼至少需 6 個字元");
+    setLoading(true);
+    try {
+      if (mode === "register") await window.AuthAPI.registerWithEmail(email, pw);
+      else await window.AuthAPI.signInWithEmail(email, pw);
+      // onAuthStateChanged drives the next screen (ProfileCompletion for new users)
+    } catch (ex) {
+      const c = ex.code || "";
+      let m = "登入失敗，請再試一次";
+      if (c === "auth/email-already-in-use") m = "此 Email 已註冊過，請改用「登入」";
+      else if (c === "auth/invalid-email") m = "Email 格式不正確";
+      else if (c === "auth/weak-password") m = "密碼至少需 6 個字元";
+      else if (c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") m = "Email 或密碼錯誤";
+      else if (c === "auth/user-not-found") m = "查無此帳號，請先點「註冊」";
+      else if (c === "auth/too-many-requests") m = "嘗試次數過多，請稍後再試";
+      else if (c === "auth/network-request-failed") m = "網路錯誤，請檢查連線";
+      else if (c === "auth/operation-not-allowed") m = "Email 登入尚未啟用，請聯絡管理員 jiahowchang@gmail.com";
+      setErr(m); setLoading(false);
+    }
+  };
+  const handleReset = async () => {
+    setErr(""); setNotice("");
+    if (!email.trim()) return setErr("請先在上方輸入 Email，再點忘記密碼");
+    try {
+      await window.AuthAPI.resetPassword(email);
+      setNotice("已寄出密碼重設信至 " + email.trim() + "，請查看信箱（含垃圾郵件匣）。");
+    } catch (ex) {
+      const c = ex.code || "";
+      setErr(c === "auth/user-not-found" ? "查無此 Email 帳號" : c === "auth/invalid-email" ? "Email 格式不正確" : "寄送失敗，請稍後再試");
+    }
+  };
+  const copyUrl = async () => {
+    try { await navigator.clipboard.writeText(location.href); setCopied(true); setTimeout(() => setCopied(false), 2200); }
+    catch (e) {
+      const ta = document.createElement("textarea"); ta.value = location.href; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); setCopied(true); setTimeout(() => setCopied(false), 2200); } catch(_){} document.body.removeChild(ta);
     }
   };
   return (
@@ -1070,17 +1135,37 @@ function AuthScreen() {
           <div className="auth-author"><MedIcon name="stethoscope" size={14}/><span>建置者 · 張家豪 醫師</span><span style={{ color: "var(--ink-3)" }}>·</span><span style={{ color: "var(--ink-3)" }}>新竹台大分院 急診醫學部</span></div>
         </div>
         <div className="auth-form-side">
-          <div className="auth-form" style={{ display: "flex", flexDirection: "column", justifyContent: "center", minHeight: 460 }}>
+          <div className="auth-form" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <h2 className="auth-heading">歡迎回來</h2>
-            <p className="auth-sub" style={{ marginBottom: 32 }}>使用您的 Google 帳號一鍵登入。第一次使用者於登入後完成基本資料。</p>
+            <p className="auth-sub" style={{ marginBottom: 22 }}>用 Google 一鍵登入，或用 Email 註冊。第一次使用者登入後完成基本資料。</p>
+            {inApp && (
+              <div style={{ padding: "12px 14px", marginBottom: 18, background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.5)", borderRadius: 10, fontSize: 12.5, color: "var(--ink-1)", lineHeight: 1.65 }}>
+                <div style={{ fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 6, color: "#d97706" }}><MedIcon name="info" size={14}/>偵測到 App 內建瀏覽器</div>
+                您正從 LINE／FB／IG 等 App 內開啟，<b>Google 登入會被擋下</b>。請改用 Safari／Chrome 開啟本站，或直接用下方 <b>Email 登入</b>。
+                <button type="button" onClick={copyUrl} style={{ marginTop: 8, padding: "6px 12px", background: "var(--surface)", border: "1px solid rgba(245,158,11,0.6)", borderRadius: 7, fontSize: 12, fontWeight: 600, color: "#d97706", cursor: "pointer" }}>{copied ? "✓ 已複製，到瀏覽器貼上" : "複製本站網址"}</button>
+              </div>
+            )}
             <button type="button" className="google-signin-btn" onClick={handleGoogle} disabled={loading}>
               {loading ? <span style={{ display:"inline-flex", alignItems:"center", gap:10 }}><span className="spinner-sm"></span>連線 Google 中…</span> : <>
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
                 <span>使用 Google 帳號繼續</span>
               </>}
             </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "22px 0 18px", color: "var(--ink-3)", fontSize: 12 }}>
+              <div style={{ flex: 1, height: 1, background: "var(--border)" }}></div>或使用 Email<div style={{ flex: 1, height: 1, background: "var(--border)" }}></div>
+            </div>
+            <form onSubmit={handleEmail}>
+              <label className="auth-field"><div className="auth-field-label">Email</div><input type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}/></label>
+              <label className="auth-field" style={{ marginTop: 12 }}><div className="auth-field-label">密碼 <span style={{ color: "var(--ink-3)", fontWeight: 400 }}>（至少 6 碼）</span></div><input type="password" autoComplete={mode === "register" ? "new-password" : "current-password"} placeholder="••••••" value={pw} onChange={e => setPw(e.target.value)}/></label>
+              <button type="submit" className="auth-submit" style={{ marginTop: 16 }} disabled={loading}>{loading ? "處理中…" : (mode === "register" ? <>註冊並進入<MedIcon name="arrow-right" size={16}/></> : <>Email 登入<MedIcon name="arrow-right" size={16}/></>)}</button>
+            </form>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, fontSize: 12.5 }}>
+              <button type="button" onClick={() => { setMode(mode === "register" ? "login" : "register"); setErr(""); setNotice(""); }} style={{ background: "none", border: "none", color: "var(--accent-deep)", cursor: "pointer", textDecoration: "underline", padding: 0 }}>{mode === "register" ? "已有帳號？登入" : "沒有帳號？註冊"}</button>
+              {mode !== "register" && <button type="button" onClick={handleReset} style={{ background: "none", border: "none", color: "var(--ink-3)", cursor: "pointer", textDecoration: "underline", padding: 0 }}>忘記密碼？</button>}
+            </div>
             {err && <div className="auth-error" style={{ marginTop: 16 }}><MedIcon name="info" size={14}/>{err}</div>}
-            <p className="auth-tos" style={{ marginTop: 24 }}>登入即表示您同意本平台僅供學習用途；本站內容不作為臨床診療或考試結果之保證。</p>
+            {notice && <div style={{ marginTop: 16, padding: "10px 12px", background: "var(--accent-soft)", color: "var(--accent-deep)", borderRadius: 8, fontSize: 12.5, lineHeight: 1.6 }}>{notice}</div>}
+            <p className="auth-tos" style={{ marginTop: 20 }}>登入即表示您同意本平台僅供學習用途；本站內容不作為臨床診療或考試結果之保證。</p>
           </div>
         </div>
       </div>
@@ -1136,7 +1221,7 @@ function ProfileCompletion({ user }) {
             <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, background: "var(--surface-alt)", borderRadius: 10, marginBottom: 16 }}>
               {user.photoURL ? <img src={user.photoURL} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid var(--border)" }} alt=""/> : <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--accent-soft)", color: "var(--accent-deep)", display: "grid", placeItems: "center", fontWeight: 700, fontSize: 13 }}>{(user.name || user.email || "?").trim().slice(0, 2).toUpperCase()}</div>}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 10, color: "var(--ink-3)", letterSpacing: "0.08em" }}>已使用 GOOGLE 登入</div>
+                <div style={{ fontSize: 10, color: "var(--ink-3)", letterSpacing: "0.08em" }}>{user.photoURL ? "已使用 GOOGLE 登入" : "已驗證 EMAIL 帳號"}</div>
                 <div style={{ fontSize: 12.5, color: "var(--ink-1)", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user.email}</div>
               </div>
             </div>
@@ -1154,7 +1239,7 @@ function ProfileCompletion({ user }) {
             </div>
             {err && <div className="auth-error"><MedIcon name="info" size={14}/>{err}</div>}
             <button type="submit" className="auth-submit" disabled={loading}>{loading ? "儲存中…" : <>完成並進入平台<MedIcon name="arrow-right" size={16}/></>}</button>
-            <button type="button" onClick={handleSignOut} style={{ marginTop: 12, padding: "8px 16px", background: "transparent", color: "var(--ink-3)", border: "none", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>使用其他 Google 帳號登入</button>
+            <button type="button" onClick={handleSignOut} style={{ marginTop: 12, padding: "8px 16px", background: "transparent", color: "var(--ink-3)", border: "none", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>登出 · 使用其他帳號</button>
           </form>
         </div>
       </div>
