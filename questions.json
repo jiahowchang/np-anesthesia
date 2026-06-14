@@ -2644,7 +2644,7 @@
     "year": 114,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "一位70歲女性因暈厥被送至急診，圖(一)是此病人的心電圖，最有可能是下列何種心律？\n圖(一)",
+    "stem": "一位70歲女性因暈厥被送至急診，圖(一)是此病人的心電圖，最有可能是下列何種心律？",
     "options": [
       {
         "key": "A",
@@ -2687,7 +2687,8 @@
       ],
       "keyword": "Mobitz type II, AV block, pacemaker",
       "source": "ACC/AHA/HRS 2018 Bradycardia and Cardiac Conduction Delay Guidelines"
-    }
+    },
+    "stemImage": "images/Q-ANE-114-A09.png"
   },
   {
     "id": "Q-ANE-114-A10",
@@ -2737,7 +2738,8 @@
       ],
       "keyword": "Small bowel obstruction, adhesion, RSI",
       "source": "EAST Practice Management Guidelines for SBO"
-    }
+    },
+    "stemImage": "images/Q-ANE-114-A10.png"
   },
   {
     "id": "Q-ANE-114-A11",
@@ -2837,7 +2839,8 @@
       ],
       "keyword": "Pneumothorax, tube thoracostomy, ATLS",
       "source": "ATLS 10/e; BTS Pleural Disease Guidelines 2010"
-    }
+    },
+    "stemImage": "images/Q-ANE-114-A12.png"
   },
   {
     "id": "Q-ANE-114-A13",
@@ -3242,7 +3245,7 @@
     "year": 114,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "一位58歲男性主訴胸悶、盜汗到急診，十二導程心電圖如圖(四)。目前血壓90/60mmHg、\n心跳52次/分，無明顯肺部濕囉音。在等待心導管檢查的同時，下列處置何者不適當？\n圖(四)",
+    "stem": "一位58歲男性主訴胸悶、盜汗到急診，十二導程心電圖如圖(四)。目前血壓90/60mmHg、\n心跳52次/分，無明顯肺部濕囉音。在等待心導管檢查的同時，下列處置何者不適當？",
     "options": [
       {
         "key": "A",
@@ -3285,7 +3288,8 @@
       ],
       "keyword": "Acute coronary syndrome, RV infarct, nitroglycerin contraindication",
       "source": "ACC/AHA NSTEMI/STEMI Guidelines"
-    }
+    },
+    "stemImage": "images/Q-ANE-114-A21.png"
   },
   {
     "id": "Q-ANE-114-A22",
@@ -4137,7 +4141,8 @@
       ],
       "keyword": "Goiter, tracheal deviation, difficult airway",
       "source": "Hagberg Airway Management 4/e"
-    }
+    },
+    "stemImage": "images/Q-ANE-114-A38.png"
   },
   {
     "id": "Q-ANE-114-A39",
@@ -7950,7 +7955,8 @@
     ],
     "answer": "C",
     "answerText": "C 為 L4",
-    "source": "衛福部 113 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 113 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-113-T61.png"
   },
   {
     "id": "Q-ANE-113-T62",
@@ -8202,7 +8208,8 @@
     ],
     "answer": "B",
     "answerText": "class II",
-    "source": "衛福部 113 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 113 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-113-T70.png"
   },
   {
     "id": "Q-ANE-113-T71",
@@ -9081,7 +9088,7 @@
     "year": 113,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "80歲女性為長期糖尿病、高血壓及中風不良於行之病人，因急性腹痛來急診就醫，其平躺\n之腹部X光如圖(一)，另一張左側躺之腹部X光檢查如圖(二)，下列敘述何者正確？\n圖(一) 圖(二)",
+    "stem": "80歲女性為長期糖尿病、高血壓及中風不良於行之病人，因急性腹痛來急診就醫，其平躺\n之腹部X光如圖(一)，另一張左側躺之腹部X光檢查如圖(二)，下列敘述何者正確？",
     "options": [
       {
         "key": "A",
@@ -9123,7 +9130,8 @@
       ],
       "keyword": "Pneumoperitoneum, perforated viscus, free air",
       "source": "WSES Perforated Peptic Ulcer Guidelines; Sabiston Surgery"
-    }
+    },
+    "stemImage": "images/Q-ANE-113-A13.png"
   },
   {
     "id": "Q-ANE-113-A14",
@@ -9228,7 +9236,7 @@
     "year": 113,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "圖(三)顯示的心電圖波形是何種心律不整？\n圖(三)",
+    "stem": "圖(三)顯示的心電圖波形是何種心律不整？",
     "options": [
       {
         "key": "A",
@@ -9270,7 +9278,8 @@
       ],
       "keyword": "Complete AV block, third degree, pacemaker",
       "source": "ACC/AHA/HRS 2018 Bradycardia Guidelines"
-    }
+    },
+    "stemImage": "images/Q-ANE-113-A16.png"
   },
   {
     "id": "Q-ANE-113-A17",
@@ -9375,7 +9384,7 @@
     "year": 113,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "中年男性心悸入急診，脈搏154次/分、血壓80/50mmHg、呼吸20次/分、意識E3M6V5，\n心電圖如圖(四)，下列處置何者正確？\n圖(四)",
+    "stem": "中年男性心悸入急診，脈搏154次/分、血壓80/50mmHg、呼吸20次/分、意識E3M6V5，\n心電圖如圖(四)，下列處置何者正確？",
     "options": [
       {
         "key": "A",
@@ -9417,7 +9426,8 @@
       ],
       "keyword": "VT, synchronized cardioversion, ACLS",
       "source": "AHA 2020 ACLS Guidelines"
-    }
+    },
+    "stemImage": "images/Q-ANE-113-A19.png"
   },
   {
     "id": "Q-ANE-113-A20",
@@ -9718,7 +9728,7 @@
     "year": 113,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "圖(五)為血栓彈力圖(thrombelastograghy,TEG)檢驗的結果，請選出最合適的答案：\n圖(五)",
+    "stem": "圖(五)為血栓彈力圖(thrombelastograghy,TEG)檢驗的結果，請選出最合適的答案：",
     "options": [
       {
         "key": "A",
@@ -9760,7 +9770,8 @@
       ],
       "keyword": "TEG, fibrinolysis, TXA",
       "source": "ASA Practice Guidelines Blood Management; CRASH-2"
-    }
+    },
+    "stemImage": "images/Q-ANE-113-A26.png"
   },
   {
     "id": "Q-ANE-113-A27",
@@ -13702,7 +13713,7 @@
     "year": 112,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "關於圖(一)由肺動脈導管所測得波型，下列敘述何者正確？\n圖(一)",
+    "stem": "關於圖(一)由肺動脈導管所測得波型，下列敘述何者正確？",
     "options": [
       {
         "key": "A",
@@ -13723,7 +13734,8 @@
     ],
     "answer": "C",
     "answerText": "③ 段可代表肺動脈壓力 ( PAP )",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-112-T47.png"
   },
   {
     "id": "Q-ANE-112-T48",
@@ -14094,7 +14106,7 @@
     "year": 112,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "圖(二)為評估動脈導管所測之壓力，下列何者正確？\n圖(二)",
+    "stem": "圖(二)為評估動脈導管所測之壓力，下列何者正確？",
     "options": [
       {
         "key": "A",
@@ -14115,14 +14127,15 @@
     ],
     "answer": "D",
     "answerText": "② 處的收縮壓須以波形校正數值",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-112-T61.png"
   },
   {
     "id": "Q-ANE-112-T62",
     "year": 112,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "術中病人血壓突然降低，圖(三)心電圖出現以下波型，下列何者正確？\n圖(三)",
+    "stem": "術中病人血壓突然降低，圖(三)心電圖出現以下波型，下列何者正確？",
     "options": [
       {
         "key": "A",
@@ -14143,7 +14156,8 @@
     ],
     "answer": "C",
     "answerText": "atrial flutter，可能需要同步心臟整流",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-112-T62.png"
   },
   {
     "id": "Q-ANE-112-T63",
@@ -14570,7 +14584,7 @@
     "year": 112,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "圖(四)為同一名病人的頸椎X光攝影，左側是頸椎屈曲，右側是頸椎伸展，圖(五)則是\n由圖(四)轉化而來的卡通簡圖，顯示麻醉前評估病人的頸椎狀況，最有可能的問題是：\n圖 ( 四 ) 圖 ( 五 )",
+    "stem": "圖(四)為同一名病人的頸椎X光攝影，左側是頸椎屈曲，右側是頸椎伸展，圖(五)則是\n由圖(四)轉化而來的卡通簡圖，顯示麻醉前評估病人的頸椎狀況，最有可能的問題是：",
     "options": [
       {
         "key": "A",
@@ -14591,7 +14605,8 @@
     ],
     "answer": "C",
     "answerText": "寰樞椎半脫臼 ( atlantoaxial subluxation )",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-112-T78.png"
   },
   {
     "id": "Q-ANE-112-T79",
@@ -14619,7 +14634,8 @@
     ],
     "answer": "AC",
     "answerText": "4 mm",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-112-T79.png"
   },
   {
     "id": "Q-ANE-112-T80",
@@ -15270,7 +15286,7 @@
     "year": 112,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "圖(一)為心電圖顯示的波形，下列何者為最有可能的心律？\n圖(一)",
+    "stem": "圖(一)為心電圖顯示的波形，下列何者為最有可能的心律？",
     "options": [
       {
         "key": "A",
@@ -15291,7 +15307,8 @@
     ],
     "answer": "D",
     "answerText": "第三度 AV block",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-112-A23.png"
   },
   {
     "id": "Q-ANE-112-A24",
@@ -16110,7 +16127,7 @@
     "year": 112,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "麻醉中發現二氧化碳監測波形如圖(二)，下列敘述何者最有可能？\n圖( 二 )",
+    "stem": "麻醉中發現二氧化碳監測波形如圖(二)，下列敘述何者最有可能？",
     "options": [
       {
         "key": "A",
@@ -16131,7 +16148,8 @@
     ],
     "answer": "B",
     "answerText": "malfunction of CO\n2\nabsorbent",
-    "source": "衛福部 112 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 112 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-112-A53.png"
   },
   {
     "id": "Q-ANE-112-A54",
@@ -19722,7 +19740,7 @@
     "year": 111,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "病人因呼吸急促合併胸悶被送到急診，意識清楚但血壓72/38mmHg，心電圖顯示如\n下圖(一)，下列處置何者錯誤？\n圖(一)",
+    "stem": "病人因呼吸急促合併胸悶被送到急診，意識清楚但血壓72/38mmHg，心電圖顯示如\n下圖(一)，下列處置何者錯誤？",
     "options": [
       {
         "key": "A",
@@ -19743,7 +19761,8 @@
     ],
     "answer": "B",
     "answerText": "adenosine 6 mg IV drip",
-    "source": "衛福部 111 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 111 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-111-A22.png"
   },
   {
     "id": "Q-ANE-111-A23",
@@ -19946,7 +19965,7 @@
     "year": 111,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "燒傷病人接受清創手術，術中發現 ECG如下圖(二)，下列處置何者不適當？\n圖(二)",
+    "stem": "燒傷病人接受清創手術，術中發現 ECG如下圖(二)，下列處置何者不適當？",
     "options": [
       {
         "key": "A",
@@ -19967,7 +19986,8 @@
     ],
     "answer": "B",
     "answerText": "給予dantrolene避免鈣離子釋出",
-    "source": "衛福部 111 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 111 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-111-A30.png"
   },
   {
     "id": "Q-ANE-111-A31",
@@ -22683,7 +22703,8 @@
     ],
     "answer": "C",
     "answerText": "class Ⅲ",
-    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-110-T47.png"
   },
   {
     "id": "Q-ANE-110-T48",
@@ -23419,7 +23440,7 @@
     "year": 110,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "潮氣末端二氧化碳(EtCO )監測儀顯示如圖(二)，可能原因為何？\n2\n圖 (二)",
+    "stem": "潮氣末端二氧化碳(EtCO )監測儀顯示如圖(二)，可能原因為何？\n2",
     "options": [
       {
         "key": "A",
@@ -23440,7 +23461,8 @@
     ],
     "answer": "A",
     "answerText": "慢性阻塞性肺疾",
-    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-110-T74.png"
   },
   {
     "id": "Q-ANE-110-T75",
@@ -24259,7 +24281,7 @@
     "year": 110,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "病人無意識且評估為無脈搏，心電圖顯示如圖(一)，下列敘述何者正確？\n圖(一)",
+    "stem": "病人無意識且評估為無脈搏，心電圖顯示如圖(一)，下列敘述何者正確？",
     "options": [
       {
         "key": "A",
@@ -24280,7 +24302,8 @@
     ],
     "answer": "D",
     "answerText": "在 CPR 過程中，可給予 amiodarone 300 mg IV push",
-    "source": "衛福部 110 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 110 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-110-A24.png"
   },
   {
     "id": "Q-ANE-110-A25",
@@ -27332,7 +27355,8 @@
     ],
     "answer": "D",
     "answerText": "高血鉀",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-109-T53.png"
   },
   {
     "id": "Q-ANE-109-T54",
@@ -27416,7 +27440,8 @@
     ],
     "answer": "C",
     "answerText": "IV級",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-109-T56.png"
   },
   {
     "id": "Q-ANE-109-T57",
@@ -27640,7 +27665,8 @@
     ],
     "answer": "B",
     "answerText": "3 → 1 → 4 → 2",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-109-T64.png"
   },
   {
     "id": "Q-ANE-109-T65",
@@ -27780,7 +27806,8 @@
     ],
     "answer": "D",
     "answerText": "二氧化碳再吸入",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-109-T69.png"
   },
   {
     "id": "Q-ANE-109-T70",
@@ -27864,7 +27891,8 @@
     ],
     "answer": "B",
     "answerText": "給予Insulin + Glucose",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 通論",
+    "stemImage": "images/Q-ANE-109-T72.png"
   },
   {
     "id": "Q-ANE-109-T73",
@@ -30160,7 +30188,8 @@
     ],
     "answer": "D",
     "answerText": "外耳道高度\n第10頁，共 11頁",
-    "source": "衛福部 109 年度專科護理師甄審筆試 · 進階"
+    "source": "衛福部 109 年度專科護理師甄審筆試 · 進階",
+    "stemImage": "images/Q-ANE-109-A74.png"
   },
   {
     "id": "Q-ANE-109-A75",
