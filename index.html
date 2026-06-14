@@ -1426,6 +1426,11 @@ function Flashcard({ deck, onExit }) {
             <div className="flash-stem">
               <span className="stem-label">題目</span>
               <div>{q.stem}</div>
+              {q.optionImage && (
+                <img src={q.optionImage} alt="題目選項圖（A/B/C/D）"
+                     style={{ width: "100%", maxWidth: 720, display: "block", margin: "16px 0 6px",
+                              borderRadius: 8, border: "1px solid var(--border)", background: "#fff" }} />
+              )}
               <ol className="flash-options">
                 {q.options.map(o => {
                   const isCorrect = o.key === q.answer;
@@ -1473,7 +1478,9 @@ function Flashcard({ deck, onExit }) {
               <div className="flash-answer-key">{q.answer}</div>
               <div style={{ flex: 1 }}><div className="flash-answer-label">正確答案</div><div className="flash-answer-text">{q.answerText}</div></div>
               <button className="oe-btn" onClick={() => {
-                const text = q.stem + "\n\n" + q.options.map(o => "(" + o.key + ") " + o.text).join("\n") + "\n\n以上題目正確答案為何？請依據臨床證據說明。";
+                const text = q.optionImage
+                  ? q.stem + "\n\n（本題選項為圖片，例如心電圖、姿勢圖或內視鏡影像，無法以文字呈現）\n\n以上題目正確答案為何？請依據臨床證據說明。"
+                  : q.stem + "\n\n" + q.options.map(o => "(" + o.key + ") " + o.text).join("\n") + "\n\n以上題目正確答案為何？請依據臨床證據說明。";
                 const fallback = () => {
                   const ta = document.createElement("textarea");
                   ta.value = text;

@@ -8543,19 +8543,19 @@
     "options": [
       {
         "key": "A",
-        "text": ""
+        "text": "選項 A"
       },
       {
         "key": "B",
-        "text": ""
+        "text": "選項 B"
       },
       {
         "key": "C",
-        "text": ""
+        "text": "選項 C"
       },
       {
         "key": "D",
-        "text": ""
+        "text": "選項 D"
       }
     ],
     "answer": "C",
@@ -8581,7 +8581,8 @@
       ],
       "keyword": "Hyperkalemia, peaked T wave, sine wave",
       "source": "KDIGO 2020 Hyperkalemia; ACLS Guidelines"
-    }
+    },
+    "optionImage": "images/Q-ANE-113-A02.png"
   },
   {
     "id": "Q-ANE-113-A03",
@@ -11632,19 +11633,19 @@
     "options": [
       {
         "key": "A",
-        "text": ""
+        "text": "選項 A"
       },
       {
         "key": "B",
-        "text": ""
+        "text": "選項 B"
       },
       {
         "key": "C",
-        "text": ""
+        "text": "選項 C"
       },
       {
         "key": "D",
-        "text": ""
+        "text": "選項 D"
       }
     ],
     "answer": "C",
@@ -11670,7 +11671,8 @@
       ],
       "keyword": "Ramped position, sniffing position, obese intubation",
       "source": "SOBA Guidelines; Hagberg Airway 4/e"
-    }
+    },
+    "optionImage": "images/Q-ANE-113-A65.png"
   },
   {
     "id": "Q-ANE-113-A66",
@@ -23392,24 +23394,25 @@
     "options": [
       {
         "key": "A",
-        "text": ""
+        "text": "選項 A"
       },
       {
         "key": "B",
-        "text": ""
+        "text": "選項 B"
       },
       {
         "key": "C",
-        "text": ""
+        "text": "選項 C"
       },
       {
         "key": "D",
-        "text": ""
+        "text": "選項 D"
       }
     ],
     "answer": "D",
     "answerText": "僅供參考",
-    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論"
+    "source": "衛福部 110 年度專科護理師甄審筆試 · 通論",
+    "optionImage": "images/Q-ANE-110-T73.png"
   },
   {
     "id": "Q-ANE-110-T74",
@@ -25968,7 +25971,7 @@
     "options": [
       {
         "key": "A",
-        "text": "S(Situatio僅n)：病人問題與供狀況 參考"
+        "text": "S(Situation)：病人問題與狀況"
       },
       {
         "key": "B",
@@ -26848,7 +26851,7 @@
       },
       {
         "key": "D",
-        "text": "代謝性鹼試中毒 (metabol題ic alkalosis) 公告"
+        "text": "代謝性鹼中毒 (metabolic alkalosis)"
       }
     ],
     "answer": "C",
@@ -26888,7 +26891,7 @@
     "year": 109,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "關於準備麻醉僅機的標準安全供檢核步驟，以參下何者正確？考",
+    "stem": "關於準備麻醉機的標準安全檢核步驟，以下何者正確？",
     "options": [
       {
         "key": "A",
@@ -27088,7 +27091,7 @@
     "options": [
       {
         "key": "A",
-        "text": "會造成支僅氣管黏膜的負供擔 參考"
+        "text": "會造成支氣管黏膜的負擔"
       },
       {
         "key": "B",
@@ -27448,7 +27451,7 @@
     "year": 109,
     "specialty": "anesth_general",
     "type": "general",
-    "stem": "關於慢性阻塞試性肺病(COPD題)術前評估的敘公述，下列何者告最不適當？",
+    "stem": "關於慢性阻塞性肺病(COPD)術前評估的敘述，下列何者最不適當？",
     "options": [
       {
         "key": "A",
@@ -28652,7 +28655,7 @@
     "year": 109,
     "specialty": "anesth_advanced",
     "type": "advanced",
-    "stem": "身高170公分試體重60公斤的題健康成人，因下公肢骨折來進行告手術，術前檢 驗血紅素15.4g/dL，\n手術進行中計算失血量500 ml，若要補充血管內容積，選用下列何者輸注最適當？",
+    "stem": "身高170公分體重60公斤的健康成人，因下肢骨折來進行手術，術前檢驗血紅素15.4g/dL，手術進行中計算失血量500 ml，若要補充血管內容積，選用下列何者輸注最適當？",
     "options": [
       {
         "key": "A",
@@ -29116,7 +29119,7 @@
       },
       {
         "key": "D",
-        "text": "頭低腳高僅的姿勢可降低供肺下葉擴張不參全(atelectasis) 考"
+        "text": "頭低腳高的姿勢可降低肺下葉擴張不全(atelectasis)"
       }
     ],
     "answer": "D",
@@ -29300,11 +29303,11 @@
     "options": [
       {
         "key": "A",
-        "text": "無法評估試 題公"
+        "text": "無法評估"
       },
       {
         "key": "B",
-        "text": "小於1 告"
+        "text": "小於1"
       },
       {
         "key": "C",
@@ -29700,7 +29703,7 @@
       },
       {
         "key": "C",
-        "text": "常有呼吸道試出血或腫脹，題需準備影像式公插管系統及傳告統喉頭鏡"
+        "text": "常有呼吸道出血或腫脹，需準備影像式插管系統及傳統喉頭鏡"
       },
       {
         "key": "D",
@@ -29920,7 +29923,7 @@
       },
       {
         "key": "B",
-        "text": "flumazenil僅 供參考"
+        "text": "flumazenil"
       },
       {
         "key": "C",
@@ -30112,7 +30115,7 @@
     "options": [
       {
         "key": "A",
-        "text": "減少通氣量使PaCO 維持在40~45 mmHg\n試2 題公告"
+        "text": "減少通氣量使PaCO2維持在40~45 mmHg"
       },
       {
         "key": "B",
