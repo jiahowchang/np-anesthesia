@@ -1151,6 +1151,11 @@ function AuthScreen() {
                 <span>使用 Google 帳號繼續</span>
               </>}
             </button>
+            {!inApp && (
+              <p style={{ marginTop: 12, marginBottom: 0, fontSize: 11.5, color: "var(--ink-3)", lineHeight: 1.6, textAlign: "center" }}>
+                💡 從 LINE／FB／IG 點進來時 Google 登入可能被擋，請改用 Safari／Chrome 開啟，或用下方 Email 登入。
+              </p>
+            )}
             <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "22px 0 18px", color: "var(--ink-3)", fontSize: 12 }}>
               <div style={{ flex: 1, height: 1, background: "var(--border)" }}></div>或使用 Email<div style={{ flex: 1, height: 1, background: "var(--border)" }}></div>
             </div>
