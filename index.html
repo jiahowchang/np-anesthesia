@@ -1426,6 +1426,11 @@ function Flashcard({ deck, onExit }) {
             <div className="flash-stem">
               <span className="stem-label">題目</span>
               <div>{q.stem}</div>
+              {q.stemImage && (
+                <img src={q.stemImage} alt="題目附圖"
+                     style={{ width: "100%", maxWidth: 560, display: "block", margin: "14px auto 4px",
+                              borderRadius: 8, border: "1px solid var(--border)", background: "#fff" }} />
+              )}
               {q.optionImage && (
                 <img src={q.optionImage} alt="題目選項圖（A/B/C/D）"
                      style={{ width: "100%", maxWidth: 720, display: "block", margin: "16px 0 6px",
