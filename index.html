@@ -2395,7 +2395,7 @@ function App() {
     </div>
   );
   if (!user) return <AuthScreen />;
-  if (user.needsProfile) return <ProfileCompletion user={user} />;
+  if (user.needsProfile && !user.isAdmin) return <ProfileCompletion user={user} />;
   let content;
   if (activeDeck) content = <Flashcard deck={activeDeck} onExit={handleExitDeck} />;
   else if (page === "home") content = <Home onNav={setPage} onPickDeck={handlePickDeck} />;
