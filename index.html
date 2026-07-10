@@ -1033,7 +1033,7 @@ function Sidebar({ currentPage, onNav, decks, isAdmin }) {
         <div style={{ padding: "10px 12px", fontSize: 12, color: "var(--ink-3)", lineHeight: 1.8, background: "var(--surface-alt)", borderRadius: 10, display: "grid", gap: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="clipboard" size={14}/><span>題庫總數</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{totalCards} 題</strong></div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="calendar" size={14}/><span>收錄年度</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{window.YEARS.length} 年</strong></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="stethoscope" size={14}/><span>專科科別</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{window.SPECIALTIES.length} 科</strong></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}><MedIcon name="stethoscope" size={14}/><span>題庫分類</span><strong style={{ marginLeft: "auto", color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{window.SPECIALTIES.length} 類</strong></div>
         </div>
       </div>
     </aside>
@@ -1128,7 +1128,7 @@ function AuthScreen() {
           </div>
           <div className="auth-tagline">為訓練中的<br/><span style={{ color: "var(--accent)" }}>麻醉專科護理師</span><br/>而生的考試準備平台</div>
           <ul className="auth-features">
-            <li><div className="auth-feat-icon"><MedIcon name="clipboard" size={16}/></div><div><div className="auth-feat-title">麻醉科歷屆考古題</div><div className="auth-feat-sub">109–114 年通論 + 進階共 958 題</div></div></li>
+            <li><div className="auth-feat-icon"><MedIcon name="clipboard" size={16}/></div><div><div className="auth-feat-title">麻醉科歷屆考古題</div><div className="auth-feat-sub">109–114 年通論 + 進階共 960 題</div></div></li>
             <li><div className="auth-feat-icon"><MedIcon name="lightbulb" size={16}/></div><div><div className="auth-feat-title">閃卡複習 · 翻牌記憶</div><div className="auth-feat-sub">Space 翻牌、← → 切題、1/2/3 評熟練</div></div></li>
             <li><div className="auth-feat-icon"><MedIcon name="trend-up" size={16}/></div><div><div className="auth-feat-title">通過率儀表板</div><div className="auth-feat-sub">歷年甄審結果視覺化</div></div></li>
           </ul>
@@ -1213,7 +1213,7 @@ function ProfileCompletion({ user }) {
           </div>
           <div className="auth-tagline">為訓練中的<br/><span style={{ color: "var(--accent)" }}>麻醉專科護理師</span><br/>而生的考試準備平台</div>
           <ul className="auth-features">
-            <li><div className="auth-feat-icon"><MedIcon name="clipboard" size={16}/></div><div><div className="auth-feat-title">麻醉科歷屆考古題</div><div className="auth-feat-sub">109–114 年通論 + 進階共 958 題</div></div></li>
+            <li><div className="auth-feat-icon"><MedIcon name="clipboard" size={16}/></div><div><div className="auth-feat-title">麻醉科歷屆考古題</div><div className="auth-feat-sub">109–114 年通論 + 進階共 960 題</div></div></li>
             <li><div className="auth-feat-icon"><MedIcon name="lightbulb" size={16}/></div><div><div className="auth-feat-title">閃卡複習 · 翻牌記憶</div><div className="auth-feat-sub">Space 翻牌、← → 切題、1/2/3 評熟練</div></div></li>
             <li><div className="auth-feat-icon"><MedIcon name="trend-up" size={16}/></div><div><div className="auth-feat-title">通過率儀表板</div><div className="auth-feat-sub">歷年甄審結果視覺化</div></div></li>
           </ul>
@@ -1287,9 +1287,10 @@ function Home({ onNav, onPickDeck }) {
       <div className="kpi-row">
         <Kpi label="題庫總數" value={qs.length} unit="題" icon="clipboard" />
         <Kpi label="收錄年度" value={`109–${Math.max(...window.YEARS)}`} icon="calendar" />
-        <Kpi label={`${latest.year}年通過率`} value={latest.rate} unit="%" delta="+2.8%" deltaDir="up" icon="target" iconCls="blue" />
+        <Kpi label={`${latest.year}年通過率`} value={latest.rate} unit="%" delta={`+${(latest.rate - stats.yearly[stats.yearly.length - 2].rate).toFixed(1)}%`} deltaDir="up" icon="target" iconCls="blue" />
         <Kpi label={`${latest.year}年通過人數`} value={latest.passed.toLocaleString()} unit="人" icon="award" iconCls="warm" />
       </div>
+      <div style={{ margin: "2px 2px 14px", fontSize: 12, color: "var(--ink-3)", opacity: 0.85 }}>通過率與通過人數為示範資料，實際請以衛福部公告為準。</div>
       <div style={{ margin: "8px 0 12px", display: "flex", alignItems: "center", gap: 10 }}>
         <MedIcon name="stethoscope" size={16} />
         <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ink-3)", margin: 0 }}>依科別瀏覽</h3>
@@ -1675,7 +1676,7 @@ function YearlyChart({ data }) {
   const linePath = data.map((d, i) => { const x = PAD.l + bandW * i + bandW / 2; const y = PAD.t + innerH - (d.rate / 100) * innerH; return (i === 0 ? "M" : "L") + x + " " + y; }).join(" ");
   return (
     <div className="panel">
-      <div className="panel-head"><div><div className="panel-title">年度報考與通過率趨勢</div><div className="panel-sub">109–113 年 · 報考人數（長條）vs 通過率（折線）</div></div>
+      <div className="panel-head"><div><div className="panel-title">年度報考與通過率趨勢</div><div className="panel-sub">109–114 年 · 報考人數（長條）vs 通過率（折線）</div></div>
         <div className="legend"><span><span className="legend-dot" style={{ background: "color-mix(in oklch, var(--accent) 40%, transparent)", border: "1px solid var(--accent)" }}></span>報考人數</span><span><span className="legend-dot" style={{ background: "var(--accent)", boxShadow: "0 0 8px var(--accent-glow)" }}></span>通過率</span></div>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="chart-wrap" style={{ width: "100%", height: "auto" }}>
@@ -1755,7 +1756,7 @@ function AgeBucket({ data }) {
 function FullSpecTable({ data, specs, avgRate }) {
   return (
     <div className="panel">
-      <div className="panel-head"><div><div className="panel-title">113年甄審結果明細</div><div className="panel-sub">五年平均通過率 {avgRate}%</div></div></div>
+      <div className="panel-head"><div><div className="panel-title">113年甄審結果明細</div><div className="panel-sub">六年平均通過率 {avgRate}%</div></div></div>
       <table className="spec-table"><thead><tr><th style={{ width: 180 }}>科別</th><th>報考</th><th>通過</th><th>未通過</th><th style={{ width: 240 }}>通過率</th></tr></thead>
         <tbody>{data.map(d => { const spec = specs.find(s => s.id === d.id); return (
           <tr key={d.id}><td><div className="spec-name"><span className={"spec-icon-tile sm " + spec.className}><SpecIcon id={spec.id} size={16}/></span>{spec.name}</div></td><td>{d.applied.toLocaleString()}</td><td><strong>{d.passed.toLocaleString()}</strong></td><td style={{ color: "var(--ink-3)" }}>{(d.applied - d.passed).toLocaleString()}</td><td><div className="pass-cell"><div className="mini-bar"><div className="mini-bar-fill" style={{ width: d.rate + "%" }}></div></div><span style={{ width: 56, textAlign: "right", fontWeight: 600 }}>{d.rate}%</span></div></td></tr>
@@ -1778,7 +1779,7 @@ function Dashboard() {
         <Kpi label={`${latest.year}年通過人數`} value={latest.passed.toLocaleString()} unit="人" delta={`+${latest.passed - prev.passed} 人`} deltaDir="up" icon="users" iconCls="warm" />
         <Kpi label={`${latest.year}年通過率`} value={latest.rate} unit="%" delta={`+${(latest.rate - prev.rate).toFixed(1)}%`} deltaDir="up" icon="target" iconCls="blue" />
         <Kpi label={`${latest.year}年報考人數`} value={latest.applied.toLocaleString()} unit="人" icon="clipboard" />
-        <Kpi label="5年累計通過" value={totalAll.toLocaleString()} unit="人" icon="award" iconCls="rose" />
+        <Kpi label="6年累計通過" value={totalAll.toLocaleString()} unit="人" icon="award" iconCls="rose" />
       </div>
       <div className="dash-grid"><YearlyChart data={stats.yearly} /><SpecRingChart data={stats.bySpecialty113} specs={specs} /></div>
       <div className="dash-grid-2" style={{ marginBottom: 14 }}><SpecBreakdown data={stats.bySpecialty113} specs={specs} /><AgeBucket data={stats.ageBucket} /></div>
@@ -2102,7 +2103,7 @@ function About() {
         <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "0 0 8px" }}>網站目的</h3>
         <p style={{ marginTop: 0 }}>本平台專為訓練中之台灣麻醉專科護理師（Anesthesia Nurse Practitioner）整理歷屆甄審筆試考古題，以「閃卡」形式輔助記憶複習。每題附原始選項與標準答案。</p>
         <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "20px 0 8px" }}>科目範圍</h3>
-        <p style={{ marginTop: 0 }}>麻醉科專科護理通論、進階麻醉專科護理 共 2 科目，109–114 年累計 958 題。</p>
+        <p style={{ marginTop: 0 }}>麻醉科通論、進階麻醉專科 共 2 科目，109–114 年累計 960 題。</p>
         <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", margin: "20px 0 8px" }}>使用說明</h3>
         <ul style={{ marginTop: 0, paddingLeft: 18 }}>
           <li>於「考古題卡組」依年度／科別／題型篩選</li>
