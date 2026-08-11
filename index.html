@@ -799,17 +799,10 @@ window.AuthAPI = {
   current: () => cachedProfile,
   subscribe: (fn) => { authListeners.add(fn); return () => authListeners.delete(fn); },
   signInWithGoogle: async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      // onAuthStateChanged will fire and update the cached profile
-    } catch (e) {
-      // Popup blocked / unsupported → fallback to redirect
-      if (e.code === "auth/popup-blocked" || e.code === "auth/cancelled-popup-request" || e.code === "auth/operation-not-supported-in-this-environment") {
-        await signInWithRedirect(auth, googleProvider);
-      } else {
-        throw e;
-      }
-    }
+    // 只用 popup。signInWithRedirect 在 iOS/iPad 與 GitHub Pages（跨網域 firebaseapp.com）
+    // 會因儲存分區出現「missing initial state」錯誤，故不再 fallback 到 redirect；
+    // popup 失敗時由 UI 導向 Email 登入。
+    await signInWithPopup(auth, googleProvider);
   },
   // Email/password fallback — works inside in-app browsers (LINE/FB/IG) where Google OAuth is blocked
   registerWithEmail: async (email, password) => {
@@ -1064,6 +1057,7 @@ function AuthScreen() {
       const code = ex.code || "";
       let msg = ex.message || "登入失敗";
       if (code === "auth/popup-closed-by-user") msg = "登入視窗已關閉";
+      else if (code === "auth/popup-blocked") msg = "此裝置擋住了 Google 登入彈窗（iPad／手機常見）。請改用下方 Email 登入，或改用電腦版 Chrome。";
       else if (code === "auth/cancelled-popup-request") msg = "已取消登入";
       else if (code === "auth/network-request-failed") msg = "網路錯誤，請檢查連線";
       else if (code === "auth/unauthorized-domain") msg = "此網域未授權使用此登入方式，請聯絡管理員 jiahowchang@gmail.com";
