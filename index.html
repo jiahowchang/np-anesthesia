@@ -293,12 +293,12 @@ body::before {
   height: 100%; background: linear-gradient(90deg, var(--accent), oklch(0.65 0.18 220));
   border-radius: 99px; transition: width 0.4s cubic-bezier(.22,.61,.36,1); box-shadow: 0 0 12px var(--accent-glow);
 }
-.flash-card { perspective: 2000px; height: 520px; }
-.flash-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; }
+.flash-card { perspective: 2000px; }
+.flash-card-inner { position: relative; width: 100%; transition: transform 0.7s cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; display: grid; }
 .flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
 .flash-face.back { transform: rotateY(180deg); }
 .flash-face {
-  position: absolute; inset: 0; backface-visibility: hidden;
+  grid-area: 1 / 1; min-height: 520px; backface-visibility: hidden;
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px 40px;
   display: flex; flex-direction: column; box-shadow: var(--shadow-md); overflow: hidden;
@@ -1513,12 +1513,12 @@ function Flashcard({ deck, onExit }) {
               <div>{q.stem}</div>
               {q.stemImage && (
                 <img src={q.stemImage} alt="題目附圖"
-                     style={{ width: "100%", maxWidth: 560, display: "block", margin: "14px auto 4px",
+                     style={{ display: "block", maxWidth: "min(100%, 520px)", maxHeight: 340, width: "auto", height: "auto", margin: "14px auto 4px",
                               borderRadius: 8, border: "1px solid var(--border)", background: "#fff" }} />
               )}
               {q.optionImage && (
                 <img src={q.optionImage} alt="題目選項圖（A/B/C/D）"
-                     style={{ width: "100%", maxWidth: 720, display: "block", margin: "16px 0 6px",
+                     style={{ display: "block", maxWidth: "min(100%, 640px)", maxHeight: 420, width: "auto", height: "auto", margin: "16px auto 6px",
                               borderRadius: 8, border: "1px solid var(--border)", background: "#fff" }} />
               )}
               <ol className="flash-options">
