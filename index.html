@@ -736,7 +736,7 @@ window.ADMIN_EMAIL = "jiahowchang@gmail.com";
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp, query, orderBy, where, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBrs80vpFVe-iEh5ctzRWfYHUBb3KGvILo",
@@ -906,6 +906,36 @@ window.NotesAPI = {
     }, (err) => { console.error("subscribeMine error", err); callback([]); });
   },
 };
+
+// Stats API — 每題作答統計（登入→Firestore 跨裝置；訪客→localStorage）
+// attempts: { [qid]: { n: 作答次數, w: 答錯次數, last: 上次對錯(1/0), at } }
+const STATS_COL = "np_anesthesia_stats";
+const GUEST_STATS_KEY = "np_anes_stats_guest";
+window.StatsAPI = {
+  load: async () => {
+    const user = auth.currentUser;
+    if (!user) { try { return JSON.parse(localStorage.getItem(GUEST_STATS_KEY) || "{}"); } catch(e) { return {}; } }
+    try { const snap = await getDoc(doc(db, STATS_COL, user.uid)); return snap.exists() ? (snap.data().attempts || {}) : {}; }
+    catch(e) { console.error("StatsAPI.load", e); return {}; }
+  },
+  record: async (qid, correct) => {
+    const user = auth.currentUser;
+    if (!user) {
+      let s = {}; try { s = JSON.parse(localStorage.getItem(GUEST_STATS_KEY) || "{}"); } catch(err){}
+      const ent = s[qid] || { n: 0, w: 0 }; ent.n++; if (!correct) ent.w++; ent.last = correct ? 1 : 0; ent.at = Date.now(); s[qid] = ent;
+      try { localStorage.setItem(GUEST_STATS_KEY, JSON.stringify(s)); } catch(err){}
+      return;
+    }
+    try {
+      await setDoc(doc(db, STATS_COL, user.uid), { uid: user.uid, attempts: { [qid]: { n: increment(1), w: increment(correct ? 0 : 1), last: correct ? 1 : 0, at: serverTimestamp() } }, updatedAt: serverTimestamp() }, { merge: true });
+    } catch(err) { console.error("StatsAPI.record", err); }
+  },
+  reset: async () => {
+    const user = auth.currentUser;
+    if (!user) { try { localStorage.removeItem(GUEST_STATS_KEY); } catch(e){} return; }
+    try { await deleteDoc(doc(db, STATS_COL, user.uid)); } catch(err) { console.error("StatsAPI.reset", err); }
+  },
+};
   </script>
 
   <!-- React Components -->
@@ -977,6 +1007,7 @@ function NavIcon({ name }) {
     case "chart": return <svg viewBox="0 0 24 24" {...s}><path d="M4 20V8"/><path d="M10 20V4"/><path d="M16 20v-9"/><path d="M22 20H2"/></svg>;
     case "book": return <svg viewBox="0 0 24 24" {...s}><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4Z"/><path d="M4 16a4 4 0 0 1 4-4h12"/></svg>;
     case "info": return <svg viewBox="0 0 24 24" {...s}><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>;
+    case "target": return <svg viewBox="0 0 24 24" {...s}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>;
     default: return null;
   }
 }
@@ -990,6 +1021,7 @@ function Sidebar({ currentPage, onNav, decks, isAdmin }) {
     { id: "decks", label: "考古題卡組", icon: "deck", badge: decks },
     { id: "practice", label: "參考書練習題", icon: "lightbulb", badge: practiceCount },
     { id: "review", label: "今日複習", icon: "review" },
+    { id: "analytics", label: "弱點分析", icon: "target" },
     { id: "dashboard", label: "通過率儀表板", icon: "chart" },
   ];
   const refs = [
@@ -1466,8 +1498,10 @@ function Flashcard({ deck, onExit }) {
   const prev = useCallback(() => { setFlipped(false); setSelected(null); setIdx(i => Math.max(0, i - 1)); }, []);
   const pickAnswer = (key) => {
     if (selected) return;  // already answered
+    const isRight = key === q.answer;
     setSelected(key);
-    setAnswers(a => a[q.id] ? a : ({ ...a, [q.id]: { picked: key, correct: key === q.answer } }));  // 記錄作答
+    setAnswers(a => a[q.id] ? a : ({ ...a, [q.id]: { picked: key, correct: isRight } }));  // 記錄本次作答
+    try { window.StatsAPI && window.StatsAPI.record(q.id, isRight); } catch(e) {}  // 累積個人化統計
     setTimeout(() => setFlipped(true), 700);  // auto-flip after brief feedback
   };
   const restart = () => { setShowResult(false); setIdx(0); setSelected(null); setFlipped(false); setAnswers({}); };
@@ -2431,6 +2465,102 @@ function AdminPanel() {
 }
 
 // ===== Main App =====
+// ===== 弱點分析（個人化）=====
+function Analytics({ onPickDeck }) {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { let alive = true; window.StatsAPI.load().then(s => { if (alive) { setStats(s || {}); setLoading(false); } }).catch(() => { if (alive) { setStats({}); setLoading(false); } }); return () => { alive = false; }; }, []);
+  const data = useMemo(() => {
+    if (!stats) return null;
+    const byId = {}; window.QUESTIONS.forEach(q => byId[q.id] = q);
+    const entries = Object.entries(stats).map(([qid, s]) => ({ qid, q: byId[qid], n: (s && s.n) || 0, w: (s && s.w) || 0, last: s && s.last })).filter(e => e.q && e.n > 0);
+    const totalN = entries.reduce((a, e) => a + e.n, 0);
+    const totalW = entries.reduce((a, e) => a + e.w, 0);
+    const attemptedQ = entries.length;
+    const overallAcc = totalN ? Math.round((totalN - totalW) / totalN * 100) : 0;
+    const agg = (keyFn, lookup) => {
+      const m = {}; entries.forEach(e => { const k = keyFn(e.q); if (k == null) return; (m[k] = m[k] || { n: 0, w: 0, q: 0 }); m[k].n += e.n; m[k].w += e.w; m[k].q += 1; });
+      return Object.entries(m).map(([id, v]) => ({ id, ...lookup(id), acc: Math.round((v.n - v.w) / v.n * 100), n: v.n, w: v.w, q: v.q })).sort((a, b) => a.acc - b.acc);
+    };
+    const bySpec = agg(q => q.specialty, id => { const s = window.SPECIALTIES.find(x => x.id === id); return { name: s ? s.name : id, className: s ? s.className : "" }; });
+    const byType = agg(q => q.type, id => { const t = window.QUESTION_TYPES.find(x => x.id === id); return { name: t ? t.name : id }; });
+    const mostWrong = entries.filter(e => e.w > 0).sort((a, b) => b.w - a.w || (b.w / b.n) - (a.w / a.n)).slice(0, 20);
+    const kwMap = {};
+    entries.filter(e => e.w > 0 && e.q.explanation && e.q.explanation.keyword).forEach(e => {
+      String(e.q.explanation.keyword).split(/[、,，\/／]/).map(s => s.trim()).filter(Boolean).forEach(kw => { (kwMap[kw] = kwMap[kw] || { w: 0 }); kwMap[kw].w += e.w; });
+    });
+    const weakKw = Object.entries(kwMap).map(([kw, v]) => ({ kw, w: v.w })).sort((a, b) => b.w - a.w).slice(0, 14);
+    const reviewQs = entries.filter(e => e.last === 0 || e.w > 0).map(e => e.q);
+    return { totalN, totalW, attemptedQ, overallAcc, bySpec, byType, mostWrong, weakKw, reviewQs };
+  }, [stats]);
+  const accColor = (a) => a >= 80 ? "oklch(0.72 0.17 150)" : a >= 60 ? "oklch(0.78 0.15 90)" : "oklch(0.68 0.19 25)";
+  const handleReset = async () => { if (!window.confirm("確定要清除你的作答統計嗎？此動作無法復原。")) return; try { await window.StatsAPI.reset(); } catch(e) {} setStats({}); };
+  if (loading) return <div className="fade-in"><div className="page-head"><div><h1 className="page-title">弱點分析</h1><p className="page-sub">載入你的作答紀錄中…</p></div></div></div>;
+  if (!data || data.attemptedQ === 0) return (
+    <div className="fade-in"><div className="page-head"><div><h1 className="page-title">弱點分析</h1><p className="page-sub">個人化學習弱點分析</p></div></div>
+      <div className="card" style={{ padding: 44, textAlign: "center" }}>
+        <div style={{ fontSize: 42, marginBottom: 10 }}>📊</div>
+        <div style={{ fontSize: 15, color: "var(--ink-1)", fontWeight: 600 }}>還沒有作答紀錄</div>
+        <div style={{ fontSize: 13.5, marginTop: 8, color: "var(--ink-3)", lineHeight: 1.7 }}>到「考古題卡組」點選作答後，這裡就會分析你<b>最常答錯的題目</b>與<b>各科別的知識弱點</b>，並讓你一鍵針對弱點複習。</div>
+      </div>
+    </div>
+  );
+  const bar = (item) => (
+    <div key={item.id} style={{ display: "grid", gridTemplateColumns: "88px 1fr 96px", alignItems: "center", gap: 12, padding: "8px 0" }}>
+      <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink-1)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
+      <div style={{ height: 10, borderRadius: 99, background: "var(--surface-alt)", overflow: "hidden" }}><div style={{ height: "100%", width: item.acc + "%", background: accColor(item.acc), borderRadius: 99, transition: "width .5s" }}></div></div>
+      <div style={{ fontSize: 12.5, color: "var(--ink-3)", textAlign: "right", fontVariantNumeric: "tabular-nums" }}><b style={{ color: accColor(item.acc) }}>{item.acc}%</b> · 錯{item.w}/{item.n}</div>
+    </div>
+  );
+  return (
+    <div className="fade-in">
+      <div className="page-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12 }}>
+        <div><h1 className="page-title">弱點分析</h1><p className="page-sub">依你的作答紀錄，找出常錯題目與知識弱點（登入後跨裝置同步）</p></div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          {data.reviewQs.length > 0 && <button className="btn-primary" onClick={() => onPickDeck({ year: "弱點", specialty: "review", qs: data.reviewQs })}><MedIcon name="play" size={14}/><span style={{ marginLeft: 8 }}>針對弱點複習（{data.reviewQs.length} 題）</span></button>}
+          <button type="button" onClick={handleReset} style={{ background: "none", border: "1px solid var(--border)", color: "var(--ink-3)", borderRadius: 8, padding: "9px 13px", fontSize: 12.5, cursor: "pointer", fontFamily: "inherit" }}>清除統計</button>
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 18 }}>
+        <div className="card" style={{ padding: 18, textAlign: "center" }}><div style={{ fontSize: 12, color: "var(--ink-3)" }}>已作答題數</div><div style={{ fontSize: 30, fontWeight: 800 }}>{data.attemptedQ}</div></div>
+        <div className="card" style={{ padding: 18, textAlign: "center" }}><div style={{ fontSize: 12, color: "var(--ink-3)" }}>整體答對率</div><div style={{ fontSize: 30, fontWeight: 800, color: accColor(data.overallAcc) }}>{data.overallAcc}%</div></div>
+        <div className="card" style={{ padding: 18, textAlign: "center" }}><div style={{ fontSize: 12, color: "var(--ink-3)" }}>累計答錯次數</div><div style={{ fontSize: 30, fontWeight: 800, color: "oklch(0.7 0.18 25)" }}>{data.totalW}</div></div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+        <div className="card" style={{ padding: 22 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 6px" }}>各科別答對率<span style={{ fontSize: 12, color: "var(--ink-3)", fontWeight: 400, marginLeft: 8 }}>（由弱到強）</span></h3>
+          {data.bySpec.map(bar)}
+        </div>
+        <div className="card" style={{ padding: 22 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 6px" }}>各題型答對率</h3>
+          {data.byType.map(bar)}
+          {data.weakKw.length > 0 && <React.Fragment>
+            <h3 style={{ fontSize: 14, fontWeight: 700, margin: "18px 0 10px" }}>常錯知識主題</h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {data.weakKw.map(k => <span key={k.kw} style={{ fontSize: 12.5, padding: "4px 11px", borderRadius: 20, background: "color-mix(in oklch, oklch(0.68 0.19 25) 14%, var(--surface-alt))", color: "oklch(0.72 0.16 25)", border: "1px solid color-mix(in oklch, oklch(0.68 0.19 25) 30%, transparent)" }}>{k.kw} <b>×{k.w}</b></span>)}
+            </div>
+          </React.Fragment>}
+        </div>
+      </div>
+      <div className="card" style={{ padding: 22 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 12px" }}>最常答錯的題目<span style={{ fontSize: 12, color: "var(--ink-3)", fontWeight: 400, marginLeft: 8 }}>（點擊複習該題）</span></h3>
+        <div style={{ display: "grid", gap: 8 }}>
+          {data.mostWrong.map(e => { const sp = window.SPECIALTIES.find(s => s.id === e.q.specialty); return (
+            <button key={e.qid} type="button" onClick={() => onPickDeck({ year: "複習", specialty: "review", qs: [e.q] })}
+              style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "center", textAlign: "left", background: "var(--surface-alt)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-3)", fontFamily: "var(--font-mono)", marginBottom: 2 }}>{e.qid} · {sp ? sp.name : ""}</div>
+                <div style={{ fontSize: 13.5, color: "var(--ink-1)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.q.stem.replace(/\n/g, " ").slice(0, 52)}…</div>
+              </div>
+              <div style={{ fontSize: 12.5, color: "oklch(0.72 0.16 25)", fontWeight: 700, whiteSpace: "nowrap" }}>答錯 {e.w}/{e.n} 次</div>
+            </button>
+          ); })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [page, setPage] = useState("home");
   const [activeDeck, setActiveDeck] = useState(null);
@@ -2468,6 +2598,7 @@ function App() {
   else if (page === "decks") content = <DeckList onPickDeck={handlePickDeck} />;
   else if (page === "practice") content = <PracticeBank onPickDeck={handlePickDeck} />;
   else if (page === "review") content = <ReviewToday onPickDeck={handlePickDeck} />;
+  else if (page === "analytics") content = <Analytics onPickDeck={handlePickDeck} />;
   else if (page === "dashboard") content = <Dashboard />;
   else if (page === "syllabus") content = <Syllabus />;
   else if (page === "about") content = <About />;
@@ -2481,7 +2612,7 @@ function App() {
         <div className="topbar-left">
           <MedIcon name="pulse" size={16}/><span style={{ color: "var(--ink-3)" }}>Anesthesia NP Prep Platform</span>
           <span style={{ width: 1, height: 14, background: "var(--border)" }}></span>
-          <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>{activeDeck ? "閃卡複習" : page === "home" ? "總覽" : page === "decks" ? "考古題卡組" : page === "practice" ? "參考書練習題" : page === "review" ? "今日複習" : page === "dashboard" ? "甄審通過率儀表板" : page === "syllabus" ? "命題大綱" : page === "admin" ? "使用者管理" : "關於本站"}</span>
+          <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>{activeDeck ? "閃卡複習" : page === "home" ? "總覽" : page === "decks" ? "考古題卡組" : page === "practice" ? "參考書練習題" : page === "review" ? "今日複習" : page === "analytics" ? "弱點分析" : page === "dashboard" ? "甄審通過率儀表板" : page === "syllabus" ? "命題大綱" : page === "admin" ? "使用者管理" : "關於本站"}</span>
         </div>
         <div className="topbar-right">
           <div className="topbar-time"><MedIcon name="calendar" size={13}/><span>114 年度</span></div>
