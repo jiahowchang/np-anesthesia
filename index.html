@@ -298,7 +298,8 @@ body::before {
 /* 只顯示當前一面（由 JSX 的 display 切換），翻面時用「僅正面朝向」的翻入動畫，
    永遠不會出現朝背的鏡像內容 —— 修正 iOS Safari backface-visibility 失效導致的
    鏡像文字與幽靈按鈕（手機無法點選）問題。 */
-@keyframes flashFlipIn { from { transform: perspective(1200px) rotateY(-78deg); opacity: 0; } to { transform: perspective(1200px) rotateY(0deg); opacity: 1; } }
+/* 純淡入（不用 3D transform），避免動畫期間 transform 造成觸控命中偏移／點不到選項 */
+@keyframes flashFlipIn { from { opacity: 0; } to { opacity: 1; } }
 .flash-face {
   min-height: 520px;
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
@@ -1452,17 +1453,24 @@ function Flashcard({ deck, onExit }) {
   const [flipped, setFlipped] = useState(false);
   const [selected, setSelected] = useState(null);
   const [reviewed, setReviewed] = useState(() => new Set());
+  const [answers, setAnswers] = useState(() => ({}));   // { qid: { picked, correct } }
+  const [showResult, setShowResult] = useState(false);
   const total = deck.qs.length;
   const q = deck.qs[idx];
   const spec = window.SPECIALTIES.find(s => s.id === q.specialty);
   const type = window.QUESTION_TYPES.find(t => t.id === q.type);
-  const next = useCallback(() => { setFlipped(false); setSelected(null); setIdx(i => Math.min(total - 1, i + 1)); }, [total]);
+  const next = useCallback(() => {
+    if (idx >= total - 1) { setShowResult(true); return; }   // 最後一題後 → 顯示成績
+    setFlipped(false); setSelected(null); setIdx(i => i + 1);
+  }, [idx, total]);
   const prev = useCallback(() => { setFlipped(false); setSelected(null); setIdx(i => Math.max(0, i - 1)); }, []);
   const pickAnswer = (key) => {
     if (selected) return;  // already answered
     setSelected(key);
+    setAnswers(a => a[q.id] ? a : ({ ...a, [q.id]: { picked: key, correct: key === q.answer } }));  // 記錄作答
     setTimeout(() => setFlipped(true), 700);  // auto-flip after brief feedback
   };
+  const restart = () => { setShowResult(false); setIdx(0); setSelected(null); setFlipped(false); setAnswers({}); };
   const rate = (level) => {
     const k = "progress::" + deck.year + "::" + deck.specialty;
     const newSet = new Set(reviewed); newSet.add(q.id); setReviewed(newSet);
@@ -1489,6 +1497,63 @@ function Flashcard({ deck, onExit }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, q.id, deck, selected, flipped]);
   const pct = Math.round(((idx + 1) / total) * 100);
+  if (showResult) {
+    const attempted = Object.keys(answers).length;
+    const correct = Object.values(answers).filter(a => a.correct).length;
+    const unanswered = total - attempted;
+    const scorePct = total ? Math.round((correct / total) * 100) : 0;
+    const attemptRate = attempted ? Math.round((correct / attempted) * 100) : 0;
+    const wrong = deck.qs.filter(qq => answers[qq.id] && !answers[qq.id].correct);
+    const grade = scorePct >= 80 ? { t: "優異", c: "oklch(0.72 0.17 150)" } : scorePct >= 60 ? { t: "及格", c: "oklch(0.78 0.15 90)" } : { t: "待加強", c: "oklch(0.68 0.19 25)" };
+    const statBox = (label, val, col) => (
+      <div style={{ background: "var(--surface-alt)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 10px", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "var(--ink-3)", marginBottom: 4 }}>{label}</div>
+        <div style={{ fontSize: 26, fontWeight: 800, color: col || "var(--ink-1)", fontVariantNumeric: "tabular-nums" }}>{val}</div>
+      </div>
+    );
+    return (
+      <div className="fade-in flash-stage">
+        <div className="flash-toolbar">
+          <button className="flash-back" onClick={onExit}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>返回卡組</button>
+          <div className="flash-progress">本卷成績</div>
+        </div>
+        <div className="card" style={{ padding: 32 }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 13, color: "var(--ink-3)", letterSpacing: "0.08em" }}>{spec.name} · {typeof q.year === "number" ? q.year + " 年" : deck.year} · 本卷成績</div>
+            <div style={{ fontSize: 64, fontWeight: 800, margin: "6px 0 2px", color: grade.c, fontVariantNumeric: "tabular-nums", lineHeight: 1.05 }}>{scorePct}<span style={{ fontSize: 22, color: "var(--ink-3)", fontWeight: 700 }}> 分</span></div>
+            <div style={{ display: "inline-block", padding: "3px 14px", borderRadius: 20, background: "color-mix(in oklch, " + grade.c + " 16%, transparent)", color: grade.c, fontWeight: 700, fontSize: 13, marginBottom: 20 }}>{grade.t}</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 18 }}>
+            {statBox("總題數", total)}
+            {statBox("答對", correct, "oklch(0.75 0.16 150)")}
+            {statBox("答錯", attempted - correct, "oklch(0.7 0.18 25)")}
+            {statBox("未作答", unanswered, "var(--ink-3)")}
+          </div>
+          <div style={{ color: "var(--ink-2)", fontSize: 14, marginBottom: 20, textAlign: "center", lineHeight: 1.7 }}>
+            作答 {attempted} 題，答對率 <b style={{ color: "var(--ink-1)" }}>{attemptRate}%</b>（僅計已作答）；<br/>總分以全卷 {total} 題計（未作答不計分）＝ <b style={{ color: grade.c }}>{scorePct} 分</b>
+          </div>
+          {wrong.length > 0 && (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-2)", marginBottom: 10 }}>答錯題目（{wrong.length}）· 點擊複習</div>
+              <div style={{ display: "grid", gap: 8, maxHeight: 300, overflowY: "auto" }}>
+                {wrong.map(qq => (
+                  <button key={qq.id} type="button" onClick={() => { setIdx(deck.qs.indexOf(qq)); setSelected(answers[qq.id].picked); setFlipped(true); setShowResult(false); }}
+                    style={{ textAlign: "left", background: "var(--surface-alt)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                    <div style={{ fontSize: 12, color: "var(--ink-3)", fontFamily: "var(--font-mono)", marginBottom: 3 }}>{qq.id} · 你選 {answers[qq.id].picked}，正確 {qq.answer}</div>
+                    <div style={{ fontSize: 13.5, color: "var(--ink-1)" }}>{qq.stem.replace(/\n/g, " ").slice(0, 44)}…</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
+            <button className="btn-primary" onClick={restart}><MedIcon name="play" size={14}/><span style={{ marginLeft: 8 }}>重新作答本卷</span></button>
+            <button className="btn-ghost" onClick={onExit}>返回卡組</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={"fade-in flash-stage " + spec.className}>
       <div className="flash-toolbar">
@@ -1498,7 +1563,10 @@ function Flashcard({ deck, onExit }) {
           <span className="flash-tag year">{typeof q.year === "number" ? `${q.year} 年` : q.year}</span>
           <span className="flash-tag">{type.name}</span>
         </div>
-        <div className="flash-progress"><strong>{idx + 1}</strong> / {total}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div className="flash-progress"><strong>{idx + 1}</strong> / {total}</div>
+          {Object.keys(answers).length > 0 && <button type="button" onClick={() => setShowResult(true)} style={{ background: "var(--accent-soft)", color: "var(--accent-deep)", border: "1px solid color-mix(in oklch, var(--accent) 30%, transparent)", borderRadius: 8, padding: "5px 12px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>交卷看成績</button>}
+        </div>
       </div>
       <div className="flash-bar"><div className="flash-bar-fill" style={{ width: pct + "%" }}></div></div>
       <div className={"flash-card " + (flipped ? "flipped" : "")}>
@@ -1524,13 +1592,12 @@ function Flashcard({ deck, onExit }) {
                      style={{ display: "block", maxWidth: "min(100%, 640px)", maxHeight: 420, width: "auto", height: "auto", margin: "16px auto 6px",
                               borderRadius: 8, border: "1px solid var(--border)", background: "#fff" }} />
               )}
-              <ol className="flash-options">
+              <div className="flash-options">
                 {q.options.map(o => {
                   const isCorrect = o.key === q.answer;
                   const isPicked = o.key === selected;
                   let bg = "var(--surface-alt)";
                   let border = "1px solid transparent";
-                  let color = undefined;
                   if (selected) {
                     if (isCorrect) {
                       bg = "color-mix(in oklch, oklch(0.65 0.18 150) 18%, var(--surface-alt))";
@@ -1541,16 +1608,18 @@ function Flashcard({ deck, onExit }) {
                     }
                   }
                   return (
-                    <li key={o.key} className="flash-option" onClick={() => pickAnswer(o.key)}
-                        style={{ background: bg, border, cursor: selected ? "default" : "pointer", transition: "all 0.18s", userSelect: "none" }}>
+                    <button type="button" key={o.key} className="flash-option"
+                        onClick={() => pickAnswer(o.key)}
+                        style={{ background: bg, border, cursor: selected ? "default" : "pointer", transition: "all 0.18s", userSelect: "none",
+                                 font: "inherit", color: "inherit", textAlign: "left", width: "100%", margin: 0, appearance: "none", WebkitAppearance: "none", WebkitTapHighlightColor: "transparent", touchAction: "manipulation" }}>
                       <span className="flash-option-key" style={{ color: selected && (isCorrect || isPicked) ? (isCorrect ? "oklch(0.78 0.18 150)" : "oklch(0.75 0.20 25)") : undefined }}>({o.key})</span>
                       <span style={{ flex: 1 }}>{o.text}</span>
                       {selected && isCorrect && <span style={{ color: "oklch(0.78 0.18 150)", fontWeight: 700, marginLeft: 8 }}>✓</span>}
                       {selected && isPicked && !isCorrect && <span style={{ color: "oklch(0.75 0.20 25)", fontWeight: 700, marginLeft: 8 }}>✗</span>}
-                    </li>
+                    </button>
                   );
                 })}
-              </ol>
+              </div>
             </div>
             <div className="flash-hint">
               <span className="kbd">A</span> <span className="kbd">B</span> <span className="kbd">C</span> <span className="kbd">D</span> 作答
