@@ -756,6 +756,11 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 // Cached profile of current user (set by onAuthStateChanged)
 let cachedProfile = null;
 const authListeners = new Set();
+let authResolved = false;   // Firebase 是否已回報過一次登入狀態
+let lastEmit = null;        // 最近一次回報的 profile（供晚訂閱者補發）
+// 通知所有訂閱者；並記錄「已解析」狀態，讓在 onAuthStateChanged 之後才掛載的
+// React 訂閱者（questions.json 2.5MB 載入慢時很常見）能立即補到當前狀態，不會卡住
+const emit = (p) => { authResolved = true; lastEmit = p; authListeners.forEach(fn => fn(p)); };
 
 // Handle redirect result on page load (in case popup was blocked → redirect fallback)
 getRedirectResult(auth).catch(e => console.warn("Redirect result error", e));
@@ -763,7 +768,7 @@ getRedirectResult(auth).catch(e => console.warn("Redirect result error", e));
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     cachedProfile = null;
-    authListeners.forEach(fn => fn(null));
+    emit(null);
     return;
   }
   try {
@@ -774,7 +779,7 @@ onAuthStateChanged(auth, async (user) => {
         await signOut(auth);
         cachedProfile = null;
         alert("您的帳號已被管理員停用。如有疑問請聯絡 " + window.ADMIN_EMAIL);
-        authListeners.forEach(fn => fn(null));
+        emit(null);
         return;
       }
       // Update lastLoginAt in background
@@ -791,17 +796,17 @@ onAuthStateChanged(auth, async (user) => {
         needsProfile: true,
       };
     }
-    authListeners.forEach(fn => fn(cachedProfile));
+    emit(cachedProfile);
   } catch (e) {
     console.error("Profile load failed", e);
     cachedProfile = null;
-    authListeners.forEach(fn => fn(null));
+    emit(null);
   }
 });
 
 window.AuthAPI = {
   current: () => cachedProfile,
-  subscribe: (fn) => { authListeners.add(fn); return () => authListeners.delete(fn); },
+  subscribe: (fn) => { authListeners.add(fn); if (authResolved) { try { fn(lastEmit); } catch(e){} } return () => authListeners.delete(fn); },
   signInWithGoogle: async () => {
     // 只用 popup。signInWithRedirect 在 iOS/iPad 與 GitHub Pages（跨網域 firebaseapp.com）
     // 會因儲存分區出現「missing initial state」錯誤，故不再 fallback 到 redirect；
@@ -849,7 +854,7 @@ window.AuthAPI = {
       // Fallback if re-read fails: use local data with now() instead of serverTimestamp
       cachedProfile = { uid: user.uid, ...profileToSave, createdAt: null, lastLoginAt: null, isAdmin: user.email === window.ADMIN_EMAIL, needsProfile: false };
     }
-    authListeners.forEach(fn => fn(cachedProfile));
+    emit(cachedProfile);
     return cachedProfile;
   },
   logout: async () => { await signOut(auth); },
